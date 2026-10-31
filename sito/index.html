@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il Boss degli Stock – Stock e bancali per rivenditori</title>
+<meta name="description" content="Stock, lotti e bancali misti per rivenditori. Prezzi riservati ai rivenditori registrati. Carpi (MO).">
+<meta property="og:title" content="Il Boss degli Stock – Stock per rivenditori">
+<meta property="og:description" content="Lotti interi, mezzi lotti e bancali misti. Registrati per vedere i prezzi.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="logo.png">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3d3d3c;--paper:#f7f5f2;--card:#fff;--line:#e6e1da;--yellow:#c9512c;--yellow-d:#c9512c;--muted:#6d675c;--green:#1f8a4c;--red:#c8362f}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.45}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-weight:600;font-size:13px;margin:14px 0 6px}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header{background:#fff;color:var(--ink);border-bottom:1.5px solid var(--line);position:sticky;top:0;z-index:20}
+.bar{display:flex;align-items:center;gap:12px;padding:12px 0}
+.logo{display:block;line-height:0}.logo img{height:46px;width:auto}
+.spacer{flex:1}
+.hbtn{background:none;border:1.5px solid var(--line);color:var(--ink);border-radius:9px;padding:7px 11px;font-size:13px;font-weight:600}
+.hbtn.y{background:var(--yellow);border-color:var(--yellow);color:#fff}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}
+.tabs:empty{display:none}
+.tab{background:transparent;color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;white-space:nowrap;font-weight:600;font-size:13px;text-decoration:none}
+.tab.on{background:var(--yellow);color:#fff;border-color:var(--yellow)}
+.badge{display:inline-block;min-width:20px;padding:1px 6px;border-radius:999px;background:var(--red);color:#fff;font-size:11px;margin-left:4px;text-align:center}
+main{padding:22px 0 60px;min-height:60vh}
+h1,h2{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.3px;margin:0 0 6px}
+h1{font-size:34px;line-height:1.02}
+h2{font-size:23px}
+.sub{color:var(--muted);margin:0 0 18px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.chip{border:1.5px solid var(--ink);background:transparent;border-radius:999px;padding:6px 13px;font-weight:600;font-size:13px}
+.chip.on{background:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.lot{background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;transition:transform .12s}
+.lot:hover{transform:translateY(-2px)}
+.ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:58px;position:relative;background:#ece5d6 center/cover no-repeat;overflow:hidden}
+.tag{position:absolute;left:10px;top:10px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;text-transform:uppercase}
+.soldov{position:absolute;inset:0;background:rgba(20,20,20,.65);color:var(--yellow);font-family:Anton,Impact;font-size:30px;display:flex;align-items:center;justify-content:center;letter-spacing:1px}
+.lot .b{padding:13px 14px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
+.lot h3{margin:0;font-size:16px}
+.meta{font-size:13px;color:var(--muted)}
+.price{font-weight:700;font-size:17px}
+.lock{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;background:#f1ece0;border-radius:8px;padding:6px 9px;width:fit-content}
+.btn{border:none;border-radius:11px;padding:11px 16px;font-weight:700;background:var(--ink);color:#fff;text-decoration:none;display:inline-block;text-align:center}
+.btn.y{background:var(--yellow);color:#fff}
+.btn.g{background:var(--green)}
+.btn.r{background:var(--red)}
+.btn.o{background:transparent;border:1.5px solid var(--ink);color:var(--ink)}
+.btn.s{padding:7px 11px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:20px}
+.gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+.gallery .ph{border-radius:10px;font-size:22px;aspect-ratio:1;cursor:pointer;border:2px solid transparent}
+.gallery .ph.on{border-color:var(--ink)}
+.mainph{border-radius:16px;font-size:100px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.3px}
+td.r,th.r{text-align:right}
+.blur{filter:blur(5px);user-select:none}
+.sublot{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px dashed var(--line);border-radius:12px;padding:11px 12px;margin-top:8px}
+.kit{background:#fdf3ee;border:1.5px solid var(--yellow-d);border-radius:12px;padding:14px;white-space:pre-wrap;font-size:14px}
+.grp{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.grp:last-child{border:none}
+.grp .n{flex:1;min-width:0}
+.grp .n b{display:block;font-size:14px}
+.grp .n small{color:var(--muted)}
+.ok{color:var(--green);font-weight:700;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;margin:6px 0;font-size:14px}
+.step i{font-style:normal;background:var(--ink);color:var(--yellow);border-radius:50%;width:22px;height:22px;flex:0 0 22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-weight:600;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:60;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:40;padding:16px;overflow-y:auto}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:16px;padding:20px;max-width:440px;width:100%;margin:auto}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#f1ece0;margin:2px 3px 0 0}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.thumb{width:64px;height:64px;border-radius:8px;background:#ece5d6 center/cover;border:1px solid var(--line);position:relative}
+.thumb button{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:12px;line-height:1;padding:0}
+.hero{background:var(--ink);color:#fff;border-radius:18px;padding:22px;margin-bottom:20px}
+.hero h1{color:#fff}.hero h1 em{font-style:normal;color:var(--yellow)}
+.hero p{color:#cfc9bd;margin:6px 0 14px}
+.err{color:var(--red);font-size:13px;margin-top:8px}
+.note{background:#fdf3ee;border-radius:10px;padding:10px 12px;font-size:13px}
+footer{background:var(--ink);color:#bdb6a8;font-size:13px;padding:22px 0}
+.loading{text-align:center;padding:50px;color:var(--muted)}
+@media(max-width:760px){.two{grid-template-columns:1fr}h1{font-size:28px}.grp{flex-wrap:wrap}.grp .n{flex:1 0 calc(100% - 50px)}.grp .btn{flex:1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <a class="logo" href="#"><img src="logo.png" alt="Il Boss degli Stock"></a>
+      <div class="spacer"></div>
+      <div id="authbox"></div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+  </div>
+</header>
+<main><div class="wrap" id="app"><div class="loading">Caricamento…</div></div></main>
+<footer><div class="wrap">Il Boss degli Stock · Stock e bancali per rivenditori · Carpi (MO)</div></footer>
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+/* ========== CONFIGURAZIONE ========== */
+const SUPABASE_URL = 'https://jyeqwltlgmzbgyzhkbmy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_O70O2QL0HEh0bSgXhD6r_A_eub3RZdl';
+const SITE_URL = 'www.ilbossdeglistock.it';
+const BUCKET = 'lot-photos';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ========== STATO ========== */
+let user = null, profile = null;
+let cats = [], catMap = {};
+let filter = 'tutti';
+const DAY = 86400000;
+
+/* ========== UTILITÀ ========== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur = n => Number(n).toLocaleString('it-IT', {style:'currency', currency:'EUR', minimumFractionDigits: Number(n) % 1 ? 2 : 0});
+const num = n => Number(n || 0).toLocaleString('it-IT');
+const photoUrl = p => `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${p}`;
+const isAdmin = () => profile?.role === 'admin';
+const canSeePrices = () => profile && (profile.approved || isAdmin());
+const startOfDay = (d = new Date()) => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
+function ago(ts){ const d = Math.round((startOfDay() - startOfDay(new Date(ts))) / DAY); return d <= 0 ? 'oggi' : d === 1 ? 'ieri' : d + ' giorni fa'; }
+function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2600); }
+async function copy(t, msg){ try { await navigator.clipboard.writeText(t); toast(msg || 'Copiato'); } catch(e) { modal(`<h2>Copia il testo</h2><textarea style="min-height:220px">${esc(t)}</textarea><div class="row" style="margin-top:12px"><button class="btn o" data-close>Chiudi</button></div>`); } }
+function modal(html){ $('#modalBox').innerHTML = html; $('#modal').classList.add('on'); }
+function closeModal(){ $('#modal').classList.remove('on'); }
+function fail(e){ console.error(e); toast('Errore: ' + (e?.message || e)); }
+function catOf(slug){ return catMap[slug] || {name: slug, emoji: '📦'}; }
+function phDiv(lot, i = 0, cls = ''){
+  const p = lot.photos?.[i];
+  return `<div class="ph ${cls}" style="${p ? `background-image:url('${photoUrl(p)}')` : ''}">${p ? '' : catOf(lot.category).emoji}</div>`;
+}
+function parseNum(s){ if (s == null) return 0; s = String(s).trim().replace(/[€\s]/g, ''); if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.'); return parseFloat(s) || 0; }
+function parseList(t){ return t.split('\n').map(r => r.split(/[;\t]/).map(x => x.trim())).filter(r => r[0]).map(r => ({name: r[0], qty: parseInt((r[1] || '0').replace(/\D/g, '')) || 0, price: parseNum(r[2])})); }
+function parseSubs(t){ return t.split('\n').map(r => r.split(/[;\t]/).map(x => x.trim())).filter(r => r[0]).map(r => ({name: r[0], price: parseNum(r[1])})); }
+
+/* ========== DATI ========== */
+async function loadCats(){
+  const { data, error } = await sb.from('categories').select('*').order('position');
+  if (error) throw error;
+  cats = data; catMap = Object.fromEntries(data.map(c => [c.slug, c]));
+}
+async function loadProfile(){
+  profile = null;
+  if (!user) return;
+  const { data } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+  profile = data;
+}
+async function fetchLots({admin = false} = {}){
+  let q = sb.from('lots').select('*').order('created_at', {ascending: false});
+  if (!admin) q = q.neq('status', 'bozza');
+  const { data, error } = await q;
+  if (error) throw error;
+  return data;
+}
+async function fetchLotFull(id){
+  const [l, it, su, pr] = await Promise.all([
+    sb.from('lots').select('*').eq('id', id).maybeSingle(),
+    sb.from('lot_items').select('*').eq('lot_id', id).order('position'),
+    sb.from('sublots').select('*').eq('lot_id', id).order('position'),
+    canSeePrices() ? sb.from('prices').select('*').eq('lot_id', id) : Promise.resolve({data: []})
+  ]);
+  if (l.error) throw l.error;
+  if (!l.data) return null;
+  const prices = pr.data || [];
+  const P = (kind, ref) => prices.find(p => p.kind === kind && (ref == null || p.ref_id === ref))?.price;
+  return { ...l.data, items: (it.data || []).map(x => ({...x, price: P('item', x.id)})), subs: (su.data || []).map(x => ({...x, price: P('sub', x.id)})), total: P('lot') };
+}
+async function fetchLotPrices(){
+  if (!canSeePrices()) return {};
+  const { data } = await sb.from('prices').select('lot_id,price').eq('kind', 'lot');
+  return Object.fromEntries((data || []).map(p => [p.lot_id, p.price]));
+}
+
+/* ========== TESTI FACEBOOK ========== */
+function fbText(lot, variant){
+  const c = catOf(lot.category), link = `${SITE_URL}/#lotto-${lot.id}`;
+  const top = (lot.items || []).slice(0, 5).map(r => `• ${r.name}${r.qty ? ' – ' + num(r.qty) + ' pz' : ''}`).join('\n');
+  const hasSubs = (lot.subs || []).length > 0;
+  const v = [
+`🔥 ${lot.title.toUpperCase()} 🔥
+${lot.pieces ? num(lot.pieces) + ' pezzi disponibili subito' : 'Disponibile subito'}
+${top ? '\n' + top + '\n' : ''}
+${hasSubs ? '✅ Vendita anche in lotti più piccoli\n' : ''}📍 Ritiro a Carpi (MO) o spedizione
+💶 Prezzi riservati ai rivenditori su ${link}
+📩 Scrivimi in privato per info e foto`,
+`${c.emoji} Disponibile: ${lot.title}${lot.pieces ? ' (' + num(lot.pieces) + ' pz)' : ''}
+
+${lot.description || ''}
+
+Listino completo e prezzi per rivenditori 👉 ${link}
+${hasSubs ? 'Si vende tutto o a lotti. ' : ''}Contattami in privato.`,
+`📦 NUOVO STOCK – ${lot.title}
+${lot.pieces ? 'Totale ' + num(lot.pieces) + ' pezzi, ' : ''}merce pronta a magazzino.
+${top ? '\n' + top + '\n' : ''}
+${hasSubs ? 'Possibile acquistare anche solo una parte.\n' : ''}Foto, listino e prezzi 👉 ${link}`
+  ];
+  return v[((variant % 3) + 3) % 3].replace(/\n{3,}/g, '\n\n');
+}
+
+/* ========== ROUTER ========== */
+function route(){ return (location.hash || '#').slice(1); }
+function go(h){ if (location.hash === '#' + h) render(); else location.hash = h; }
+window.addEventListener('hashchange', () => { closeModal(); render(); });
+
+async function render(){
+  renderHeader();
+  const r = route(), A = $('#app');
+  const adminViews = ['gestione', 'nuovo', 'kit', 'rinnovi', 'gruppi', 'richieste', 'rivenditori'];
+  const base = r.split('-')[0];
+  try {
+    if (adminViews.includes(base) || r.startsWith('modifica-') || r.startsWith('kit-')) {
+      if (!isAdmin()) { A.innerHTML = `<div class="empty">Area riservata. <a href="#">Torna alla vetrina</a></div>`; return; }
+      A.innerHTML = '<div class="loading">Caricamento…</div>';
+      if (base === 'gestione') return await viewManage(A);
+      if (base === 'nuovo') return viewEdit(A, null);
+      if (base === 'modifica') return viewEdit(A, +r.split('-')[1]);
+      if (base === 'kit') return await viewKit(A, r.split('-')[1] ? +r.split('-')[1] : null);
+      if (base === 'rinnovi') return await viewDue(A);
+      if (base === 'gruppi') return await viewGroups(A);
+      if (base === 'richieste') return await viewRequests(A);
+      if (base === 'rivenditori') return await viewResellers(A);
+    }
+    if (r.startsWith('lotto-')) { A.innerHTML = '<div class="loading">Caricamento…</div>'; return await viewLot(A, +r.split('-')[1]); }
+    await viewShop(A);
+  } catch(e) { fail(e); A.innerHTML = `<div class="empty">Si è verificato un errore. Riprova.</div>`; }
+  window.scrollTo({top: 0});
+}
+
+let dueCount = 0, reqCount = 0;
+async function refreshCounters(){
+  if (!isAdmin()) return;
+  try {
+    const [d, r] = await Promise.all([computeDue(), sb.from('requests').select('id', {count: 'exact', head: true}).eq('handled', false)]);
+    dueCount = d.length; reqCount = r.count || 0; renderHeader();
+  } catch(e) {}
+}
+
+function renderHeader(){
+  $('#authbox').innerHTML = user
+    ? `<div class="row" style="gap:6px"><span class="meta" style="font-size:12px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(profile?.ragione_sociale || user.email)}</span><button class="hbtn" data-act="logout">Esci</button></div>`
+    : `<div class="row" style="gap:6px"><button class="hbtn" data-act="login">Accedi</button><button class="hbtn y" data-act="register">Registrati</button></div>`;
+  const r = route().split('-')[0] || 'vetrina';
+  const tabs = isAdmin() ? [
+    ['', 'Vetrina'], ['gestione', 'Lotti'], ['nuovo', '+ Carica lotto'], ['kit', 'Kit Facebook'],
+    ['rinnovi', 'Da rinnovare' + (dueCount ? `<span class="badge">${dueCount}</span>` : '')],
+    ['richieste', 'Richieste' + (reqCount ? `<span class="badge">${reqCount}</span>` : '')],
+    ['gruppi', 'Gruppi'], ['rivenditori', 'Rivenditori']
+  ] : [];
+  const cur = r === 'lotto' ? '' : r === 'modifica' ? 'gestione' : r === 'vetrina' ? '' : r;
+  $('#tabs').innerHTML = tabs.map(([k, n]) => `<a class="tab ${cur === k ? 'on' : ''}" href="#${k}">${n}</a>`).join('');
+}
+
+/* ========== VETRINA ========== */
+async function viewShop(A){
+  const [lots, prices] = await Promise.all([fetchLots(), fetchLotPrices()]);
+  const list = lots.filter(l => filter === 'tutti' || l.category === filter);
+  const usedCats = cats.filter(c => lots.some(l => l.category === c.slug));
+  A.innerHTML = `
+  ${!user ? `<div class="hero"><h1>Stock per <em>rivenditori</em></h1><p>Lotti interi, mezzi lotti e bancali misti a prezzi da stock. Registrati gratis con la tua partita IVA per vedere i prezzi.</p><button class="btn y" data-act="register">Registrati e vedi i prezzi</button></div>`
+  : `<h1>Stock disponibili</h1><p class="sub">${canSeePrices() ? 'Prezzi riservati visibili.' : 'La tua registrazione è in attesa di approvazione: vedrai i prezzi appena attivata.'}</p>`}
+  ${usedCats.length > 1 ? `<div class="chips"><button class="chip ${filter === 'tutti' ? 'on' : ''}" data-f="tutti">Tutti</button>${usedCats.map(c => `<button class="chip ${filter === c.slug ? 'on' : ''}" data-f="${c.slug}">${c.emoji} ${esc(c.name)}</button>`).join('')}</div>` : ''}
+  <div class="grid">${list.map(l => `
+    <a class="lot" href="#lotto-${l.id}">
+      <div style="position:relative">${phDiv(l)}<span class="tag">${esc(catOf(l.category).name)}</span>${l.status === 'venduto' ? '<div class="soldov">VENDUTO</div>' : ''}</div>
+      <div class="b"><h3>${esc(l.title)}</h3><div class="meta">${l.pieces ? num(l.pieces) + ' pezzi' : ''}</div>
+      <div style="margin-top:auto">${canSeePrices() ? (prices[l.id] != null ? `<span class="price">${eur(prices[l.id])}</span>` : '<span class="meta">Prezzo su richiesta</span>') : '<span class="lock">🔒 Prezzo riservato ai rivenditori</span>'}</div></div>
+    </a>`).join('') || '<div class="empty">Nessun lotto disponibile al momento. Torna presto!</div>'}</div>`;
+}
+
+/* ========== SCHEDA LOTTO ========== */
+async function viewLot(A, id){
+  const l = await fetchLotFull(id);
+  if (!l) { A.innerHTML = '<div class="empty">Lotto non trovato. <a href="#">Torna alla vetrina</a></div>'; return; }
+  document.title = l.title + ' – Il Boss degli Stock';
+  const show = canSeePrices();
+  const priceOr = v => show ? (v != null ? `<span class="price">${eur(v)}</span>` : '<span class="meta">su richiesta</span>') : '<span class="lock">🔒 Riservato</span>';
+  const sold = l.status === 'venduto';
+  A.innerHTML = `<a class="btn o s" href="#">← Tutti i lotti</a>
+  <div class="two" style="margin-top:14px">
+    <div>
+      <div id="mainph">${phDiv(l, 0, 'mainph')}</div>
+      ${l.photos.length > 1 ? `<div class="gallery">${l.photos.map((p, i) => `<div class="ph ${i === 0 ? 'on' : ''}" data-gal="${i}" style="background-image:url('${photoUrl(p)}')"></div>`).join('')}</div>` : ''}
+    </div>
+    <div>
+      <span class="pill">${catOf(l.category).emoji} ${esc(catOf(l.category).name)}</span>${sold ? '<span class="pill" style="background:var(--red);color:#fff">Venduto</span>' : ''}
+      ${isAdmin() ? `<a class="pill" href="#modifica-${l.id}" style="text-decoration:none;background:var(--yellow);color:#fff">✏️ Modifica</a><a class="pill" href="#kit-${l.id}" style="text-decoration:none;background:var(--yellow);color:#fff">📣 Kit Facebook</a>` : ''}
+      <h1 style="margin-top:8px">${esc(l.title)}</h1>
+      <p class="sub">${l.pieces ? num(l.pieces) + ' pezzi · ' : ''}Carpi (MO)</p>
+      ${l.description ? `<p style="white-space:pre-wrap">${esc(l.description)}</p>` : ''}
+      <div class="panel" style="margin-top:12px">
+        <div class="row" style="justify-content:space-between"><b>Lotto intero</b>${priceOr(l.total)}</div>
+        ${l.subs.map(s => `<div class="sublot"><span>${esc(s.name)}</span><span class="row">${priceOr(s.price)}${show && !sold ? `<button class="btn s" data-req="${esc(s.name)}" data-lot="${l.id}">Richiedi</button>` : ''}</span></div>`).join('')}
+        <div class="row" style="margin-top:14px">
+          ${sold ? '<span class="meta">Questo lotto è stato venduto. Chiedici se arrivano stock simili.</span>' :
+            !user ? `<button class="btn y" data-act="register">Registrati per i prezzi</button>` :
+            `<button class="btn y" data-req="Lotto intero" data-lot="${l.id}">Compra tutto il lotto</button>`}
+          <button class="btn o" data-req="Informazioni" data-lot="${l.id}">Chiedi informazioni</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  ${l.items.length ? `<div class="panel"><h2>Listino</h2>
+    <table><tr><th>Articolo</th><th class="r">Quantità</th><th class="r">Prezzo cad.</th></tr>
+    ${l.items.map(r => `<tr><td>${esc(r.name)}</td><td class="r">${num(r.qty)}</td><td class="r ${show ? '' : 'blur'}">${show ? (r.price != null ? eur(r.price) : '–') : '0,00 €'}</td></tr>`).join('')}</table>
+    ${show ? '' : '<p class="meta" style="margin-top:10px">🔒 I prezzi si vedono dopo la registrazione come rivenditore.</p>'}
+  </div>` : ''}`;
+  A._lot = l;
+}
+
+/* ========== GESTIONE: LISTA LOTTI ========== */
+async function viewManage(A){
+  const [lots, prices] = await Promise.all([fetchLots({admin: true}), fetchLotPrices()]);
+  A.innerHTML = `<div class="row" style="justify-content:space-between"><div><h1>I tuoi lotti</h1><p class="sub">${lots.length} lotti in totale</p></div><a class="btn y" href="#nuovo">+ Carica lotto</a></div>
+  <div class="panel">${lots.map(l => `<div class="grp">
+    <div class="thumb" style="${l.photos[0] ? `background-image:url('${photoUrl(l.photos[0])}')` : ''};display:flex;align-items:center;justify-content:center;font-size:24px">${l.photos[0] ? '' : catOf(l.category).emoji}</div>
+    <div class="n"><b>${esc(l.title)}</b><small>${{attivo: '🟢 In vendita', venduto: '🔴 Venduto', bozza: '⚪ Bozza (non visibile)'}[l.status]} · ${prices[l.id] != null ? eur(prices[l.id]) : 'senza prezzo'} · ${new Date(l.created_at).toLocaleDateString('it-IT')}</small></div>
+    <a class="btn s o" href="#lotto-${l.id}">Vedi</a>
+    <a class="btn s o" href="#modifica-${l.id}">Modifica</a>
+    <a class="btn s" href="#kit-${l.id}">Facebook</a>
+    <button class="btn s ${l.status === 'venduto' ? 'o' : 'r'}" data-sold="${l.id}" data-st="${l.status}">${l.status === 'venduto' ? 'Rimetti in vendita' : 'Venduto'}</button>
+  </div>`).join('') || '<div class="empty">Nessun lotto. Carica il primo!</div>'}</div>`;
+}
+
+/* ========== GESTIONE: CARICA / MODIFICA ========== */
+let editPhotos = []; // {path} esistenti o {file, url} nuovi
+async function viewEdit(A, id){
+  let l = null;
+  if (id) { l = await fetchLotFull(id); if (!l) { A.innerHTML = '<div class="empty">Lotto non trovato</div>'; return; } }
+  editPhotos = (l?.photos || []).map(p => ({path: p}));
+  const listTxt = (l?.items || []).map(r => `${r.name} ; ${r.qty} ; ${r.price != null ? String(r.price).replace('.', ',') : ''}`).join('\n');
+  const subsTxt = (l?.subs || []).map(s => `${s.name} ; ${s.price != null ? String(s.price).replace('.', ',') : ''}`).join('\n');
+  A.innerHTML = `<h1>${l ? 'Modifica lotto' : 'Carica un nuovo lotto'}</h1><p class="sub">Lo carichi una volta: da qui escono la pagina sul sito, il testo per Facebook e la lista dei gruppi giusti.</p>
+  <form class="panel" id="lotForm" data-id="${l?.id || ''}">
+    <label style="margin-top:0">Foto (la prima è la copertina)</label>
+    <input type="file" id="fPhotos" accept="image/*" multiple>
+    <div class="thumbs" id="thumbs"></div>
+    <label>Titolo</label><input id="fTitle" required value="${esc(l?.title || '')}" placeholder="Es. Stock accessori cane e gatto">
+    <label>Categoria</label><select id="fCat">${cats.map(c => `<option value="${c.slug}" ${l?.category === c.slug ? 'selected' : ''}>${c.emoji} ${esc(c.name)}</option>`).join('')}</select>
+    <label>Listino – una riga per articolo: nome ; quantità ; prezzo cad.</label>
+    <textarea id="fList" style="min-height:130px" placeholder="Guinzaglio nylon ; 400 ; 1,10&#10;Ciotola inox ; 300 ; 1,60">${esc(listTxt)}</textarea>
+    <p class="meta" style="margin:6px 0 0">Puoi anche incollare direttamente da Excel (colonne: articolo, quantità, prezzo).</p>
+    <label>Prezzo lotto intero (€)</label><input id="fTotal" inputmode="decimal" value="${l?.total != null ? String(l.total).replace('.', ',') : ''}" placeholder="Vuoto = somma del listino">
+    <label>Pezzi totali</label><input id="fPieces" inputmode="numeric" value="${l?.pieces || ''}" placeholder="Vuoto = somma delle quantità">
+    <label>Sotto-lotti (facoltativo) – una riga: nome ; prezzo</label>
+    <textarea id="fSubs" style="min-height:60px" placeholder="Mezzo lotto (900 pz) ; 1500">${esc(subsTxt)}</textarea>
+    <label>Descrizione <button type="button" class="btn s y" data-act="gendesc" style="margin-left:6px">✨ Scrivila tu</button></label>
+    <textarea id="fDesc" placeholder="Premi “Scrivila tu” e la preparo dal listino">${esc(l?.description || '')}</textarea>
+    <label>Stato</label><select id="fStatus">${[['attivo', 'In vendita (visibile)'], ['bozza', 'Bozza (non visibile)'], ['venduto', 'Venduto']].map(([k, n]) => `<option value="${k}" ${(l?.status || 'attivo') === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
+    <div class="err" id="fErr"></div>
+    <div class="row" style="margin-top:16px"><button class="btn y" type="submit" id="fSave">${l ? 'Salva modifiche' : 'Pubblica lotto'}</button>
+    ${l ? `<button type="button" class="btn r" data-del="${l.id}">Elimina lotto</button>` : ''}</div>
+  </form>`;
+  $('#lotForm')._oldPhotos = l?.photos || [];
+  drawThumbs();
+}
+function drawThumbs(){
+  const el = $('#thumbs'); if (!el) return;
+  el.innerHTML = editPhotos.map((p, i) => `<div class="thumb" style="background-image:url('${p.path ? photoUrl(p.path) : p.url}')"><button type="button" data-rmph="${i}">✕</button></div>`).join('');
+}
+async function compress(file){
+  try {
+    const bmp = await createImageBitmap(file);
+    const max = 1600, sc = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.82));
+    return blob || file;
+  } catch(e) { return file; }
+}
+async function saveLot(form){
+  const btn = $('#fSave'); btn.disabled = true; btn.textContent = 'Salvataggio…'; $('#fErr').textContent = '';
+  try {
+    const id = form.dataset.id ? +form.dataset.id : null;
+    const items = parseList($('#fList').value), subs = parseSubs($('#fSubs').value);
+    const pieces = parseInt($('#fPieces').value) || items.reduce((a, r) => a + r.qty, 0);
+    const sumList = items.reduce((a, r) => a + r.qty * r.price, 0);
+    const totalIn = $('#fTotal').value.trim();
+    const total = totalIn ? parseNum(totalIn) : (sumList ? Math.round(sumList * 100) / 100 : null);
+    const row = {title: $('#fTitle').value.trim(), category: $('#fCat').value, description: $('#fDesc').value.trim(), pieces, status: $('#fStatus').value};
+    let lotId = id;
+    if (id) { const { error } = await sb.from('lots').update(row).eq('id', id); if (error) throw error; }
+    else { const { data, error } = await sb.from('lots').insert(row).select('id').single(); if (error) throw error; lotId = data.id; }
+    // foto
+    const paths = [];
+    for (let i = 0; i < editPhotos.length; i++) {
+      const p = editPhotos[i];
+      if (p.path) { paths.push(p.path); continue; }
+      btn.textContent = `Carico foto ${i + 1}/${editPhotos.length}…`;
+      const blob = await compress(p.file);
+      const path = `lots/${lotId}/${Date.now()}-${i}.jpg`;
+      const { error } = await sb.storage.from(BUCKET).upload(path, blob, {contentType: 'image/jpeg', upsert: false});
+      if (error) throw error;
+      paths.push(path);
+    }
+    // foto rimosse
+    if (id && form._oldPhotos) { const removed = form._oldPhotos.filter(p => !paths.includes(p)); if (removed.length) await sb.storage.from(BUCKET).remove(removed); }
+    await sb.from('lots').update({photos: paths}).eq('id', lotId);
+    // listino, sotto-lotti, prezzi: riscritti
+    if (id) { await Promise.all([sb.from('lot_items').delete().eq('lot_id', id), sb.from('sublots').delete().eq('lot_id', id), sb.from('prices').delete().eq('lot_id', id)]); }
+    const prices = [];
+    if (items.length) {
+      const { data, error } = await sb.from('lot_items').insert(items.map((r, i) => ({lot_id: lotId, name: r.name, qty: r.qty, position: i}))).select('id,position');
+      if (error) throw error;
+      data.forEach(d => { const r = items[d.position]; if (r.price) prices.push({lot_id: lotId, kind: 'item', ref_id: d.id, price: r.price}); });
+    }
+    if (subs.length) {
+      const { data, error } = await sb.from('sublots').insert(subs.map((s, i) => ({lot_id: lotId, name: s.name, position: i}))).select('id,position');
+      if (error) throw error;
+      data.forEach(d => { const s = subs[d.position]; if (s.price) prices.push({lot_id: lotId, kind: 'sub', ref_id: d.id, price: s.price}); });
+    }
+    if (total) prices.push({lot_id: lotId, kind: 'lot', ref_id: null, price: total});
+    if (prices.length) { const { error } = await sb.from('prices').insert(prices); if (error) throw error; }
+    toast(id ? 'Lotto aggiornato' : 'Lotto pubblicato! Ecco il kit Facebook');
+    refreshCounters();
+    go(id ? 'lotto-' + lotId : 'kit-' + lotId);
+  } catch(e) { $('#fErr').textContent = 'Errore: ' + (e.message || e); btn.disabled = false; btn.textContent = 'Riprova'; }
+}
+
+/* ========== GESTIONE: KIT FACEBOOK ========== */
+async function fetchGroupsPosts(){
+  const [g, p] = await Promise.all([sb.from('fb_groups').select('*').order('name'), sb.from('fb_posts').select('*').order('posted_at', {ascending: false})]);
+  if (g.error) throw g.error; if (p.error) throw p.error;
+  return {groups: g.data, posts: p.data};
+}
+const lastPost = (posts, lot, g) => posts.find(p => p.lot_id === lot && p.group_id === g)?.posted_at || null;
+
+async function viewKit(A, id){
+  const lots = (await fetchLots({admin: true})).filter(l => l.status === 'attivo');
+  if (!lots.length) { A.innerHTML = '<h1>Kit Facebook</h1><div class="empty">Nessun lotto in vendita. <a href="#nuovo">Carica un lotto</a></div>'; return; }
+  if (!id || !lots.find(l => l.id === id)) id = lots[0].id;
+  const [l, {groups, posts}] = await Promise.all([fetchLotFull(id), fetchGroupsPosts()]);
+  const gs = groups.filter(g => g.categories.includes(l.category));
+  A._kit = l;
+  A.innerHTML = `<h1>Kit Facebook</h1><p class="sub">Testo pronto e solo i gruppi giusti per questo lotto. Il testo cambia un po' per ogni gruppo, così Facebook non lo vede come spam.</p>
+  <div class="panel"><label style="margin-top:0">Lotto</label>
+    <select id="kitSel">${lots.map(x => `<option value="${x.id}" ${x.id === l.id ? 'selected' : ''}>${catOf(x.category).emoji} ${esc(x.title)}</option>`).join('')}</select>
+    <div class="two" style="margin-top:16px">
+      <div>
+        <div class="step"><i>1</i><span>Salva le foto sul telefono.</span></div>
+        <div class="thumbs">${l.photos.map(p => `<a class="thumb" href="${photoUrl(p)}" target="_blank" rel="noopener" style="background-image:url('${photoUrl(p)}')"></a>`).join('') || '<span class="meta">Nessuna foto caricata</span>'}</div>
+        ${l.photos.length ? `<button class="btn s y" style="margin-top:8px" data-act="sharephotos">📲 Salva foto in galleria</button>` : ''}
+        <div class="step" style="margin-top:14px"><i>2</i><span>Per ogni gruppo: <b>Copia testo</b> → <b>Apri gruppo</b> → incolla, aggiungi le foto, pubblica.</span></div>
+        <div class="step"><i>3</i><span>Premi <b>Pubblicato</b>: il sistema si ricorda quando rinnovarlo.</span></div>
+        <p class="meta">Consiglio: non pubblicare in tutti i gruppi di fila, distribuiscili nella giornata.</p>
+      </div>
+      <div><b style="font-size:13px">Anteprima testo (variante 1)</b><div class="kit" style="margin-top:6px">${esc(fbText(l, 0))}</div></div>
+    </div>
+  </div>
+  <div class="panel"><h2>Gruppi per “${esc(catOf(l.category).name)}” (${gs.length})</h2>
+    ${gs.map((g, i) => { const lp = lastPost(posts, l.id, g.id); const todayDone = lp && startOfDay(new Date(lp)) === startOfDay(); return `<div class="grp">
+      <div class="n"><b>${esc(g.name)}</b><small>${lp ? 'Pubblicato ' + ago(lp) : 'Mai pubblicato'} · rinnovo ogni ${g.every_days} gg</small></div>
+      <button class="btn s o" data-copy="${i}">Copia testo</button>
+      ${g.url ? `<a class="btn s" href="${esc(g.url)}" target="_blank" rel="noopener">Apri gruppo</a>` : ''}
+      ${todayDone ? '<span class="ok">✓ Oggi</span>' : `<button class="btn s g" data-post="${l.id}|${g.id}">Pubblicato</button>`}
+    </div>`; }).join('') || '<div class="empty">Nessun gruppo per questa categoria: <a href="#gruppi">aggiungilo in “Gruppi”</a>.</div>'}
+  </div>
+  <div class="panel"><h2>Link del lotto</h2><p class="meta">Da usare su WhatsApp, Subito o nei commenti.</p><div class="row"><input readonly value="https://${SITE_URL}/#lotto-${l.id}" style="flex:1"><button class="btn s" data-copylink="https://${SITE_URL}/#lotto-${l.id}">Copia</button></div></div>`;
+}
+
+async function sharePhotos(l){
+  try {
+    const files = await Promise.all(l.photos.map(async (p, i) => { const b = await (await fetch(photoUrl(p))).blob(); return new File([b], `stock-${l.id}-${i + 1}.jpg`, {type: 'image/jpeg'}); }));
+    if (navigator.canShare && navigator.canShare({files})) { await navigator.share({files}); return; }
+    // computer: scarica una per una
+    files.forEach(f => { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; a.click(); });
+    toast('Foto scaricate');
+  } catch(e) { if (e.name !== 'AbortError') toast('Tieni premuto sulle foto per salvarle'); }
+}
+
+/* ========== GESTIONE: RINNOVI ========== */
+async function computeDue(){
+  const [lots, {groups, posts}] = await Promise.all([fetchLots({admin: true}), fetchGroupsPosts()]);
+  const t = startOfDay(), out = [];
+  lots.filter(l => l.status === 'attivo').forEach(l => groups.filter(g => g.categories.includes(l.category)).forEach(g => {
+    const lp = lastPost(posts, l.id, g.id);
+    if (lp) { const due = startOfDay(new Date(lp)) + g.every_days * DAY; if (due <= t) out.push({l, g, lp, late: Math.round((t - due) / DAY)}); }
+  }));
+  return out.sort((a, b) => b.late - a.late);
+}
+async function viewDue(A){
+  const d = await computeDue(); dueCount = d.length; renderHeader();
+  A._due = d;
+  A.innerHTML = `<h1>Da rinnovare oggi</h1><p class="sub">Solo i lotti ancora in vendita, nei gruppi dove è passato il tempo giusto. Spesso basta un commento sul vecchio post per riportarlo in cima.</p>
+  <div class="panel">${d.map((x, i) => `<div class="grp">
+      <div style="font-size:26px">${catOf(x.l.category).emoji}</div>
+      <div class="n"><b>${esc(x.l.title)}</b><small>${esc(x.g.name)} · ultimo post ${ago(x.lp)}${x.late > 0 ? ` · <span style="color:var(--red)">in ritardo di ${x.late} gg</span>` : ''}</small></div>
+      <button class="btn s o" data-duecopy="${i}">Copia</button>
+      ${x.g.url ? `<a class="btn s" href="${esc(x.g.url)}" target="_blank" rel="noopener">Apri</a>` : ''}
+      <button class="btn s g" data-post="${x.l.id}|${x.g.id}">Fatto</button>
+    </div>`).join('') || '<div class="empty">🎉 Nessun rinnovo da fare oggi</div>'}</div>`;
+}
+
+/* ========== GESTIONE: GRUPPI ========== */
+async function viewGroups(A){
+  const { data: groups, error } = await sb.from('fb_groups').select('*').order('name'); if (error) throw error;
+  A.innerHTML = `<h1>I tuoi gruppi Facebook</h1><p class="sub">Li inserisci una volta sola, con le categorie di stock e ogni quanti giorni si può ripubblicare.</p>
+  <div class="panel">${groups.map(g => `<div class="grp">
+    <div class="n"><b>${esc(g.name)}</b><small>Rinnovo ogni ${g.every_days} gg${g.url ? '' : ' · ⚠️ manca il link'}</small><div>${g.categories.map(c => `<span class="pill">${catOf(c).emoji} ${esc(catOf(c).name)}</span>`).join('')}</div></div>
+    <button class="btn s o" data-editg="${g.id}">Modifica</button>
+    <button class="btn s o" data-delg="${g.id}">Elimina</button></div>`).join('') || '<div class="empty">Nessun gruppo ancora: aggiungi il primo qui sotto.</div>'}</div>
+  ${groupForm()}
+  <div class="panel"><h2>Aggiungi tanti gruppi insieme</h2><p class="meta">Una riga per gruppo: nome ; link ; categorie separate da virgola ; giorni. Categorie: ${cats.map(c => c.slug).join(', ')}</p>
+    <textarea id="bulk" placeholder="Stock e Rimanenze Italia ; https://www.facebook.com/groups/... ; misti,casa ; 7"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn" data-act="bulk">Importa gruppi</button></div></div>`;
+  A._groups = groups;
+}
+function groupForm(g = null){
+  return `<form class="panel" id="gForm" data-id="${g?.id || ''}"><h2>${g ? 'Modifica gruppo' : 'Aggiungi gruppo'}</h2>
+    <label>Nome del gruppo</label><input id="gName" required value="${esc(g?.name || '')}">
+    <label>Link del gruppo</label><input id="gUrl" value="${esc(g?.url || '')}" placeholder="https://www.facebook.com/groups/...">
+    <label>Che stock ci metti</label><div class="chips" style="margin:0">${cats.map(c => `<label style="margin:0;font-weight:500;display:flex;gap:5px;align-items:center"><input type="checkbox" value="${c.slug}" class="gCat" style="width:auto" ${g?.categories?.includes(c.slug) ? 'checked' : ''}> ${c.emoji} ${esc(c.name)}</label>`).join('')}</div>
+    <label>Ogni quanti giorni si può ripubblicare</label><input id="gEvery" type="number" min="1" value="${g?.every_days || 7}">
+    <label>Note (regole del gruppo)</label><input id="gNotes" value="${esc(g?.notes || '')}" placeholder="Es. solo il lunedì, niente link">
+    <div class="row" style="margin-top:14px"><button class="btn y" type="submit">Salva gruppo</button>${g ? '<a class="btn o" href="#gruppi">Annulla</a>' : ''}</div>
+  </form>`;
+}
+
+/* ========== GESTIONE: RICHIESTE ========== */
+async function viewRequests(A){
+  const { data, error } = await sb.from('requests').select('*, lots(title)').order('created_at', {ascending: false}).limit(200);
+  if (error) throw error;
+  A.innerHTML = `<h1>Richieste</h1><p class="sub">Chi ha chiesto informazioni o vuole comprare dal sito.</p>
+  <div class="panel">${data.map(r => `<div class="grp" style="${r.handled ? 'opacity:.55' : ''}">
+    <div class="n"><b>${esc(r.name)} – ${esc(r.kind)}</b><small>${esc(r.lots?.title || 'Lotto eliminato')} · ${new Date(r.created_at).toLocaleString('it-IT', {dateStyle: 'short', timeStyle: 'short'})}</small>
+    <div style="font-size:14px;margin-top:4px"><b>${esc(r.contact)}</b></div>${r.message ? `<div style="font-size:14px;white-space:pre-wrap">${esc(r.message)}</div>` : ''}</div>
+    ${/^\+?[\d\s]{8,}$/.test(r.contact) ? `<a class="btn s g" href="https://wa.me/${r.contact.replace(/\D/g, '').replace(/^(?!39)(3\d{8,9})$/, '39$1')}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+    <button class="btn s ${r.handled ? 'o' : ''}" data-handled="${r.id}" data-v="${r.handled}">${r.handled ? 'Riapri' : 'Gestita'}</button>
+  </div>`).join('') || '<div class="empty">Nessuna richiesta ancora</div>'}</div>`;
+}
+
+/* ========== GESTIONE: RIVENDITORI ========== */
+async function viewResellers(A){
+  const { data, error } = await sb.from('profiles').select('*').order('created_at', {ascending: false});
+  if (error) throw error;
+  A.innerHTML = `<h1>Rivenditori registrati</h1><p class="sub">${data.filter(p => p.role !== 'admin').length} rivenditori. Puoi bloccare chi non deve vedere i prezzi.</p>
+  <div class="panel">${data.map(p => `<div class="grp">
+    <div class="n"><b>${esc(p.ragione_sociale || p.email)}${p.role === 'admin' ? ' <span class="pill">Tu</span>' : ''}</b><small>${esc(p.email)} · P.IVA ${esc(p.piva || '–')} · ${esc(p.telefono || '–')}</small></div>
+    ${p.role === 'admin' ? '' : `<button class="btn s ${p.approved ? 'o' : 'g'}" data-appr="${p.id}" data-v="${p.approved}">${p.approved ? 'Blocca prezzi' : 'Approva'}</button>`}
+  </div>`).join('')}</div>`;
+}
+
+/* ========== AUTENTICAZIONE ========== */
+function loginForm(msg = ''){
+  modal(`<h2>Accedi</h2>${msg ? `<p class="note">${msg}</p>` : ''}<form id="loginForm"><label>Email</label><input type="email" id="lEmail" required autocomplete="email"><label>Password</label><input type="password" id="lPass" required autocomplete="current-password"><div class="err" id="lErr"></div>
+  <div class="row" style="margin-top:14px"><button class="btn y">Accedi</button><button type="button" class="btn o" data-close>Annulla</button></div></form>
+  <p class="meta" style="margin-top:14px">Non hai un account? <a href="#" data-act="register">Registrati</a> · <a href="#" data-act="forgot">Password dimenticata?</a></p>`);
+}
+function registerForm(){
+  modal(`<h2>Registrazione rivenditore</h2><p class="meta">Gratis, per vedere i prezzi riservati.</p><form id="regForm">
+  <label>Ragione sociale</label><input id="rRs" required><label>Partita IVA</label><input id="rPiva" required inputmode="numeric">
+  <label>Telefono / WhatsApp</label><input id="rTel" required inputmode="tel"><label>Email</label><input type="email" id="rEmail" required autocomplete="email">
+  <label>Password (min. 8 caratteri)</label><input type="password" id="rPass" required minlength="8" autocomplete="new-password">
+  <div class="err" id="rErr"></div>
+  <div class="row" style="margin-top:14px"><button class="btn y">Registrati</button><button type="button" class="btn o" data-close>Annulla</button></div></form>
+  <p class="meta" style="margin-top:14px">Hai già un account? <a href="#" data-act="login">Accedi</a></p>`);
+}
+
+/* ========== EVENTI ========== */
+document.addEventListener('click', async e => {
+  const t = e.target.closest('button,[data-act],[data-gal]');
+  if (!t) { if (e.target.id === 'modal') closeModal(); return; }
+  const d = t.dataset, A = $('#app');
+  try {
+    if (d.close !== undefined) return closeModal();
+    if (d.act === 'login') { e.preventDefault(); return loginForm(); }
+    if (d.act === 'register') { e.preventDefault(); return registerForm(); }
+    if (d.act === 'forgot') { e.preventDefault(); modal(`<h2>Recupera password</h2><form id="forgotForm"><label>Email</label><input type="email" id="fgEmail" required><div class="row" style="margin-top:14px"><button class="btn y">Invia link</button><button type="button" class="btn o" data-close>Annulla</button></div></form>`); return; }
+    if (d.act === 'logout') { await sb.auth.signOut(); toast('Sei uscito'); return; }
+    if (d.f) { filter = d.f; return render(); }
+    if (d.gal !== undefined) { const l = A._lot; $('#mainph').innerHTML = phDiv(l, +d.gal, 'mainph'); document.querySelectorAll('[data-gal]').forEach(x => x.classList.toggle('on', x === t)); return; }
+    if (d.req) {
+      modal(`<h2>${d.req === 'Informazioni' ? 'Chiedi informazioni' : 'Richiesta d’acquisto'}</h2><p class="meta">${esc(A._lot?.title || '')} · ${esc(d.req)}</p>
+      <form id="reqForm" data-lot="${d.lot}" data-kind="${esc(d.req)}"><label>Nome / azienda</label><input id="qName" required value="${esc(profile?.ragione_sociale || '')}">
+      <label>Telefono o email</label><input id="qContact" required value="${esc(profile?.telefono || user?.email || '')}">
+      <label>Messaggio</label><textarea id="qMsg">Buongiorno, sono interessato a: ${esc(d.req)}. </textarea><div class="err" id="qErr"></div>
+      <div class="row" style="margin-top:14px"><button class="btn y">Invia richiesta</button><button type="button" class="btn o" data-close>Annulla</button></div></form>`);
+      return;
+    }
+    if (d.act === 'gendesc') {
+      const list = parseList($('#fList').value), title = $('#fTitle').value || 'Stock', c = catOf($('#fCat').value);
+      const pcs = parseInt($('#fPieces').value) || list.reduce((a, r) => a + r.qty, 0);
+      $('#fDesc').value = `${title}: ${pcs ? num(pcs) + ' pezzi ' : ''}nuovi, categoria ${c.name.toLowerCase()}.` + (list.length ? ` Il lotto comprende ${list.map(r => r.name.toLowerCase()).join(', ')}.` : '') + ` Ideale per negozi, ambulanti e rivenditori. ${parseSubs($('#fSubs').value).length ? 'Vendita in blocco o a lotti più piccoli' : 'Vendita in blocco'}, ritiro a Carpi (MO) o spedizione in tutta Italia.`;
+      toast('Descrizione pronta, modificala se vuoi'); return;
+    }
+    if (d.rmph !== undefined) { editPhotos.splice(+d.rmph, 1); return drawThumbs(); }
+    if (d.del) {
+      modal(`<h2>Eliminare il lotto?</h2><p>Spariscono anche foto, listino e storico Facebook. Non si può annullare.</p><div class="row" style="margin-top:14px"><button class="btn r" data-delok="${d.del}">Sì, elimina</button><button class="btn o" data-close>Annulla</button></div>`); return;
+    }
+    if (d.delok) {
+      const { data: l } = await sb.from('lots').select('photos').eq('id', +d.delok).single();
+      if (l?.photos?.length) await sb.storage.from(BUCKET).remove(l.photos);
+      const { error } = await sb.from('lots').delete().eq('id', +d.delok); if (error) throw error;
+      closeModal(); toast('Lotto eliminato'); refreshCounters(); return go('gestione');
+    }
+    if (d.sold) {
+      const st = d.st === 'venduto' ? 'attivo' : 'venduto';
+      const { error } = await sb.from('lots').update({status: st}).eq('id', +d.sold); if (error) throw error;
+      toast(st === 'venduto' ? 'Venduto: tolto dai rinnovi' : 'Di nuovo in vendita'); refreshCounters(); return render();
+    }
+    if (d.copy !== undefined) return copy(fbText(A._kit, +d.copy), 'Testo copiato: apri il gruppo e incolla');
+    if (d.duecopy !== undefined) {
+      const x = A._due[+d.duecopy]; const l = await fetchLotFull(x.l.id);
+      return copy(fbText(l, x.g.id + Math.floor(Date.now() / DAY)), 'Testo copiato');
+    }
+    if (d.copylink) return copy(d.copylink, 'Link copiato');
+    if (d.act === 'sharephotos') return sharePhotos(A._kit);
+    if (d.post) {
+      const [lot_id, group_id] = d.post.split('|').map(Number);
+      const { error } = await sb.from('fb_posts').insert({lot_id, group_id}); if (error) throw error;
+      toast('Segnato: ti ricorderò quando rinnovarlo'); refreshCounters(); return render();
+    }
+    if (d.delg) {
+      if (t.dataset.sure !== '1') { t.dataset.sure = '1'; t.textContent = 'Sicuro?'; t.classList.add('r'); return; }
+      const { error } = await sb.from('fb_groups').delete().eq('id', +d.delg); if (error) throw error;
+      toast('Gruppo eliminato'); return render();
+    }
+    if (d.editg) { const g = A._groups.find(x => x.id === +d.editg); $('#gForm').outerHTML = groupForm(g); $('#gForm').scrollIntoView({behavior: 'smooth'}); return; }
+    if (d.act === 'bulk') {
+      const rows = $('#bulk').value.split('\n').map(r => r.split(';').map(x => x.trim())).filter(r => r[0]);
+      if (!rows.length) return toast('Incolla almeno una riga');
+      const ins = rows.map(r => ({name: r[0], url: r[1] || null, categories: (r[2] || '').split(',').map(x => x.trim().toLowerCase()).filter(x => catMap[x]), every_days: parseInt(r[3]) || 7}));
+      const { error } = await sb.from('fb_groups').insert(ins); if (error) throw error;
+      toast(`${ins.length} gruppi importati`); return render();
+    }
+    if (d.handled) { const { error } = await sb.from('requests').update({handled: d.v !== 'true'}).eq('id', +d.handled); if (error) throw error; refreshCounters(); return render(); }
+    if (d.appr) { const { error } = await sb.from('profiles').update({approved: d.v !== 'true'}).eq('id', d.appr); if (error) throw error; return render(); }
+  } catch(err) { fail(err); }
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'kitSel') go('kit-' + e.target.value);
+  if (e.target.id === 'fPhotos') {
+    [...e.target.files].forEach(f => editPhotos.push({file: f, url: URL.createObjectURL(f)}));
+    e.target.value = ''; drawThumbs();
+  }
+});
+
+document.addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target;
+  try {
+    if (f.id === 'lotForm') return saveLot(f);
+    if (f.id === 'loginForm') {
+      const { error } = await sb.auth.signInWithPassword({email: $('#lEmail').value.trim(), password: $('#lPass').value});
+      if (error) { $('#lErr').textContent = /confirm/i.test(error.message) ? 'Devi prima confermare l’email: controlla la posta.' : 'Email o password non corretti.'; return; }
+      closeModal(); toast('Bentornato!'); return;
+    }
+    if (f.id === 'regForm') {
+      const { data, error } = await sb.auth.signUp({email: $('#rEmail').value.trim(), password: $('#rPass').value,
+        options: {emailRedirectTo: location.origin + location.pathname, data: {ragione_sociale: $('#rRs').value.trim(), piva: $('#rPiva').value.trim(), telefono: $('#rTel').value.trim()}}});
+      if (error) { $('#rErr').textContent = /registered/i.test(error.message) ? 'Questa email è già registrata: accedi.' : 'Errore: ' + error.message; return; }
+      if (data.session) { closeModal(); toast('Registrato! Ora vedi i prezzi'); }
+      else modal(`<h2>Controlla la tua email</h2><p>Ti abbiamo mandato un link di conferma a <b>${esc($('#rEmail')?.value || '')}</b>. Aprilo e poi accedi per vedere i prezzi.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`);
+      return;
+    }
+    if (f.id === 'forgotForm') {
+      await sb.auth.resetPasswordForEmail($('#fgEmail').value.trim(), {redirectTo: location.origin + location.pathname});
+      closeModal(); toast('Se l’email è registrata, ti arriva il link'); return;
+    }
+    if (f.id === 'reqForm') {
+      const { error } = await sb.from('requests').insert({lot_id: +f.dataset.lot, kind: f.dataset.kind, name: $('#qName').value.trim(), contact: $('#qContact').value.trim(), message: $('#qMsg').value.trim(), user_id: user?.id || null});
+      if (error) { $('#qErr').textContent = 'Errore, riprova.'; return; }
+      modal(`<h2>Richiesta inviata ✅</h2><p>Grazie! Ti ricontattiamo al più presto.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`); return;
+    }
+    if (f.id === 'gForm') {
+      const categories = [...document.querySelectorAll('.gCat:checked')].map(x => x.value);
+      if (!categories.length) return toast('Scegli almeno una categoria');
+      const row = {name: $('#gName').value.trim(), url: $('#gUrl').value.trim() || null, categories, every_days: +$('#gEvery').value || 7, notes: $('#gNotes').value.trim() || null};
+      const { error } = f.dataset.id ? await sb.from('fb_groups').update(row).eq('id', +f.dataset.id) : await sb.from('fb_groups').insert(row);
+      if (error) throw error;
+      toast('Gruppo salvato'); return go('gruppi');
+    }
+    if (f.id === 'newPassForm') {
+      const { error } = await sb.auth.updateUser({password: $('#npPass').value}); if (error) throw error;
+      closeModal(); toast('Password aggiornata'); return;
+    }
+  } catch(err) { fail(err); }
+});
+
+
+/* ========== AVVIO ========== */
+try { await loadCats(); } catch(e) { fail(e); }
+sb.auth.onAuthStateChange(async (ev, session) => {
+  const prev = user?.id;
+  user = session?.user || null;
+  if (ev === 'PASSWORD_RECOVERY') modal(`<h2>Nuova password</h2><form id="newPassForm"><label>Nuova password</label><input type="password" id="npPass" required minlength="8"><div class="row" style="margin-top:14px"><button class="btn y">Salva</button></div></form>`);
+  if (prev !== user?.id || ev === 'INITIAL_SESSION') {
+    setTimeout(async () => { await loadProfile(); await render(); refreshCounters(); }, 0);
+  }
+});
+</script>
+</body>
+</html>
