@@ -155,8 +155,8 @@ const SUPABASE_KEY = 'sb_publishable_O70O2QL0HEh0bSgXhD6r_A_eub3RZdl';
 const SITE_URL = 'www.ilbossdeglistock.it';
 const BUCKET = 'lot-photos';
 const AZIENDA = {
-  nome: 'Olmo S.r.l.', capitale: '30.000 € i.v.', piva: '',
-  legale: 'Via Camperio 9, 20123 Milano (MI)',
+  nome: 'Olmo S.r.l.', capitale: '30.000 € i.v.', piva: '11943250966', rea: 'MI - 2631956', pec: 'olmo@pec.cloud',
+  legale: 'Via Manfredo Camperio 9, 20123 Milano (MI)',
   magazzino: 'Via Lombardia 19/D, 41012 Carpi (MO)',
   tel: '349 410 5409', wa: '393494105409', email: 'info@ilbossdeglistock.it',
   orari: 'Lunedì – venerdì 10:00–13:00 e 15:00–18:00'
@@ -270,7 +270,7 @@ function renderFooter(){
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale}${A.piva ? ' · P.IVA ' + A.piva : ''} · Capitale sociale ${A.capitale} · <span style="opacity:.5">v6</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v7</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -629,7 +629,7 @@ function viewContacts(A){
     <div class="cbox"><h3>Magazzino e sede operativa</h3><p>${Z.magazzino}</p><p class="meta" style="margin-top:4px">Visione merce e ritiro su appuntamento</p><div class="row" style="margin-top:10px"><a class="btn s o" href="${maps}" target="_blank" rel="noopener">Apri in Maps</a></div></div>
   </div>
   <div class="panel"><h2 style="font-size:20px">Dati aziendali</h2>
-    <p style="margin:6px 0 0"><b>${Z.nome}</b><br>Sede legale: ${Z.legale}<br>Sede operativa: ${Z.magazzino}${Z.piva ? '<br>P.IVA: ' + Z.piva : ''}<br>Capitale sociale: ${Z.capitale}</p>
+    <p style="margin:6px 0 0"><b>${Z.nome}</b><br>Sede legale: ${Z.legale}<br>Sede operativa: ${Z.magazzino}<br>P.IVA e Codice fiscale: ${Z.piva}<br>REA: ${Z.rea}<br>PEC: ${Z.pec}<br>Capitale sociale: ${Z.capitale}</p>
   </div>
   ${sellBanner()}`;
 }
