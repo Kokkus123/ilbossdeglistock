@@ -44,7 +44,9 @@ h2{font-size:23px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 .lot{background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;transition:transform .12s}
 .lot:hover{transform:translateY(-2px)}
-.ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:58px;position:relative;background:#ece5d6 center/cover no-repeat;overflow:hidden}
+.ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:58px;position:relative;background:#fff center/contain no-repeat;overflow:hidden}
+.ph:not([style*=url]){background-color:#ece5d6}
+.mainph{cursor:zoom-in}
 .tag{position:absolute;left:10px;top:10px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;text-transform:uppercase}
 .soldov{position:absolute;inset:0;background:rgba(20,20,20,.65);color:var(--yellow);font-family:Anton,Impact;font-size:30px;display:flex;align-items:center;justify-content:center;letter-spacing:1px}
 .lot .b{padding:13px 14px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
@@ -65,7 +67,7 @@ h2{font-size:23px}
 .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
 .gallery .ph{border-radius:10px;font-size:22px;aspect-ratio:1;cursor:pointer;border:2px solid transparent}
 .gallery .ph.on{border-color:var(--ink)}
-.mainph{border-radius:16px;font-size:100px}
+.mainph{border-radius:16px;font-size:100px;border:1.5px solid var(--line)}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
 th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.3px}
@@ -328,7 +330,7 @@ async function viewLot(A, id){
     ${l.items.map(r => `<tr><td>${esc(r.name)}</td><td class="r">${num(r.qty)}</td><td class="r ${show ? '' : 'blur'}">${show ? (r.price != null ? eur(r.price) : '–') : '0,00 €'}</td></tr>`).join('')}</table>
     ${show ? '' : '<p class="meta" style="margin-top:10px">🔒 I prezzi si vedono dopo la registrazione come rivenditore.</p>'}
   </div>` : ''}`;
-  A._lot = l;
+  A._lot = l; A._gi = 0;
 }
 
 /* ========== GESTIONE: LISTA LOTTI ========== */
@@ -581,6 +583,8 @@ function registerForm(){
 
 /* ========== EVENTI ========== */
 document.addEventListener('click', async e => {
+  const zoom = e.target.closest('#mainph .ph');
+  if (zoom && $('#app')._lot?.photos?.length) { const l = $('#app')._lot; window.open(photoUrl(l.photos[$('#app')._gi || 0]), '_blank'); return; }
   const t = e.target.closest('button,[data-act],[data-gal]');
   if (!t) { if (e.target.id === 'modal') closeModal(); return; }
   const d = t.dataset, A = $('#app');
@@ -591,7 +595,7 @@ document.addEventListener('click', async e => {
     if (d.act === 'forgot') { e.preventDefault(); modal(`<h2>Recupera password</h2><form id="forgotForm"><label>Email</label><input type="email" id="fgEmail" required><div class="row" style="margin-top:14px"><button class="btn y">Invia link</button><button type="button" class="btn o" data-close>Annulla</button></div></form>`); return; }
     if (d.act === 'logout') { await sb.auth.signOut(); toast('Sei uscito'); return; }
     if (d.f) { filter = d.f; return render(); }
-    if (d.gal !== undefined) { const l = A._lot; $('#mainph').innerHTML = phDiv(l, +d.gal, 'mainph'); document.querySelectorAll('[data-gal]').forEach(x => x.classList.toggle('on', x === t)); return; }
+    if (d.gal !== undefined) { const l = A._lot; A._gi = +d.gal; $('#mainph').innerHTML = phDiv(l, +d.gal, 'mainph'); document.querySelectorAll('[data-gal]').forEach(x => x.classList.toggle('on', x === t)); return; }
     if (d.req) {
       modal(`<h2>${d.req === 'Informazioni' ? 'Chiedi informazioni' : 'Richiesta d’acquisto'}</h2><p class="meta">${esc(A._lot?.title || '')} · ${esc(d.req)}</p>
       <form id="reqForm" data-lot="${d.lot}" data-kind="${esc(d.req)}"><label>Nome / azienda</label><input id="qName" required value="${esc(profile?.ragione_sociale || '')}">
