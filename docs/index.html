@@ -47,7 +47,12 @@ h2{font-size:23px}
 .ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:58px;position:relative;background:#fff center/contain no-repeat;overflow:hidden}
 .ph:not([style*=url]){background-color:#ece5d6}
 .mainph{cursor:zoom-in}
-.tag{position:absolute;left:10px;top:10px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;text-transform:uppercase}
+.tag{position:absolute;left:10px;top:10px;background:rgba(255,255,255,.94);color:var(--ink);font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:4px;text-transform:uppercase;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.cats{display:flex;gap:24px;overflow-x:auto;border-bottom:1.5px solid var(--line);margin:0 0 22px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cats::-webkit-scrollbar{display:none}
+.cat{background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;padding:12px 0;font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.cat.on{color:var(--ink);border-bottom-color:var(--yellow)}
+.cat span{font-weight:500;color:#a9a296;margin-left:5px;letter-spacing:0}
 .soldov{position:absolute;inset:0;background:rgba(20,20,20,.65);color:var(--yellow);font-family:Anton,Impact;font-size:30px;display:flex;align-items:center;justify-content:center;letter-spacing:1px}
 .lot .b{padding:13px 14px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
 .lot h3{margin:0;font-size:16px}
@@ -284,7 +289,7 @@ async function viewShop(A){
   A.innerHTML = `
   ${!user ? `<div class="hero"><h1>Stock per <em>rivenditori</em></h1><p>Lotti interi, mezzi lotti e bancali misti a prezzi da stock. Registrati gratis con la tua partita IVA per vedere i prezzi.</p><button class="btn y" data-act="register">Registrati e vedi i prezzi</button></div>`
   : `<h1>Stock disponibili</h1><p class="sub">${canSeePrices() ? 'Prezzi riservati visibili.' : 'La tua registrazione è in attesa di approvazione: vedrai i prezzi appena attivata.'}</p>`}
-  ${usedCats.length > 1 ? `<div class="chips"><button class="chip ${filter === 'tutti' ? 'on' : ''}" data-f="tutti">Tutti</button>${usedCats.map(c => `<button class="chip ${filter === c.slug ? 'on' : ''}" data-f="${c.slug}">${c.emoji} ${esc(c.name)}</button>`).join('')}</div>` : ''}
+  ${usedCats.length > 1 ? `<nav class="cats"><button class="cat ${filter === 'tutti' ? 'on' : ''}" data-f="tutti">Tutti<span>${lots.length}</span></button>${usedCats.map(c => `<button class="cat ${filter === c.slug ? 'on' : ''}" data-f="${c.slug}">${esc(c.name)}<span>${lots.filter(l => l.category === c.slug).length}</span></button>`).join('')}</nav>` : ''}
   <div class="grid">${list.map(l => `
     <a class="lot" href="#lotto-${l.id}">
       <div style="position:relative">${phDiv(l)}<span class="tag">${esc(catOf(l.category).name)}</span>${l.status === 'venduto' ? '<div class="soldov">VENDUTO</div>' : ''}</div>
@@ -308,7 +313,7 @@ async function viewLot(A, id){
       ${l.photos.length > 1 ? `<div class="gallery">${l.photos.map((p, i) => `<div class="ph ${i === 0 ? 'on' : ''}" data-gal="${i}" style="background-image:url('${photoUrl(p)}')"></div>`).join('')}</div>` : ''}
     </div>
     <div>
-      <span class="pill">${catOf(l.category).emoji} ${esc(catOf(l.category).name)}</span>${sold ? '<span class="pill" style="background:var(--red);color:#fff">Venduto</span>' : ''}
+      <span class="pill" style="text-transform:uppercase;letter-spacing:.06em">${esc(catOf(l.category).name)}</span>${sold ? '<span class="pill" style="background:var(--red);color:#fff">Venduto</span>' : ''}
       ${isAdmin() ? `<a class="pill" href="#modifica-${l.id}" style="text-decoration:none;background:var(--yellow);color:#fff">✏️ Modifica</a><a class="pill" href="#kit-${l.id}" style="text-decoration:none;background:var(--yellow);color:#fff">📣 Kit Facebook</a>` : ''}
       <h1 style="margin-top:8px">${esc(l.title)}</h1>
       <p class="sub">${l.pieces ? num(l.pieces) + ' pezzi · ' : ''}Carpi (MO)</p>
