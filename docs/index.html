@@ -129,7 +129,7 @@ footer{background:var(--ink);color:#bdb6a8;font-size:13px;padding:22px 0}
   </div>
 </header>
 <main><div class="wrap" id="app"><div class="loading">Caricamento…</div></div></main>
-<footer><div class="wrap">Il Boss degli Stock · Stock e bancali per rivenditori · Carpi (MO) · <a href="#proponi" style="color:#fff">Vendi il tuo stock</a> · <span style="opacity:.5">v3</span></div></footer>
+<footer><div class="wrap">Il Boss degli Stock · Stock e bancali per rivenditori · Carpi (MO) · <a href="#proponi" style="color:#fff">Vendi il tuo stock</a> · <span style="opacity:.5">v4</span></div></footer>
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -152,8 +152,8 @@ const DAY = 86400000;
 /* ========== UTILITÀ ========== */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const eur = n => Number(n).toLocaleString('it-IT', {style:'currency', currency:'EUR', minimumFractionDigits: Number(n) % 1 ? 2 : 0});
-const num = n => Number(n || 0).toLocaleString('it-IT');
+const eur = n => { const v = Number(n), d = v % 1 ? 2 : 0; const [i, f] = v.toFixed(d).split('.'); return i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (f ? ',' + f : '') + ' €'; };
+const num = n => String(Math.round(Number(n || 0))).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const photoUrl = p => `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${p}`;
 const isAdmin = () => profile?.role === 'admin';
 const canSeePrices = () => profile && (profile.approved || isAdmin());
