@@ -270,7 +270,7 @@ function renderFooter(){
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v9</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v10</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -300,12 +300,12 @@ async function render(){
   window.scrollTo({top: 0});
 }
 
-let dueCount = 0, reqCount = 0, propCount = 0;
+let dueCount = 0, reqCount = 0, propCount = 0, pendCount = 0;
 async function refreshCounters(){
   if (!isAdmin()) return;
   try {
-    const [d, r, pr] = await Promise.all([computeDue(), sb.from('requests').select('id', {count: 'exact', head: true}).eq('handled', false), sb.from('proposals').select('id', {count: 'exact', head: true}).eq('status', 'nuova')]);
-    dueCount = d.length; reqCount = r.count || 0; propCount = pr.count || 0; renderHeader();
+    const [d, r, pr, pe] = await Promise.all([computeDue(), sb.from('requests').select('id', {count: 'exact', head: true}).eq('handled', false), sb.from('proposals').select('id', {count: 'exact', head: true}).eq('status', 'nuova'), sb.from('profiles').select('id', {count: 'exact', head: true}).eq('approved', false).neq('role', 'admin')]);
+    dueCount = d.length; reqCount = r.count || 0; propCount = pr.count || 0; pendCount = pe.count || 0; renderHeader();
   } catch(e) {}
 }
 
@@ -318,7 +318,7 @@ function renderHeader(){
     ['', 'Vetrina'], ['gestione', 'Lotti'], ['nuovo', '+ Carica lotto'], ['kit', 'Kit Facebook'],
     ['rinnovi', 'Da rinnovare' + (dueCount ? `<span class="badge">${dueCount}</span>` : '')],
     ['richieste', 'Richieste' + (reqCount ? `<span class="badge">${reqCount}</span>` : '')],
-    ['gruppi', 'Gruppi'], ['rivenditori', 'Rivenditori']
+    ['gruppi', 'Gruppi'], ['rivenditori', 'Rivenditori' + (pendCount ? `<span class="badge">${pendCount}</span>` : '')]
   ] : [['', 'Vetrina'], ['proponi', 'Vendi il tuo stock'], ['contatti', 'Contatti']];
   if (isAdmin()) tabs.splice(6, 0, ['proposte', 'Proposte' + (propCount ? `<span class="badge">${propCount}</span>` : '')]);
   if (isAdmin()) tabs.push(['contatti', 'Contatti']);
@@ -333,7 +333,7 @@ async function viewShop(A){
   const usedCats = cats.filter(c => lots.some(l => l.category === c.slug));
   A.innerHTML = `
   ${!user ? `<div class="hero"><h1>Stock per <em>rivenditori</em></h1><p>Lotti interi, mezzi lotti e bancali misti a prezzi da stock. Registrati gratis con la tua partita IVA per vedere i prezzi.</p><div class="row"><button class="btn y" data-act="register">Registrati e vedi i prezzi</button><a class="btn o" href="#proponi" style="border-color:#fff;color:#fff">Vendi il tuo stock</a></div></div>`
-  : `<h1>Stock disponibili</h1><p class="sub">${canSeePrices() ? 'Prezzi riservati visibili.' : 'La tua registrazione è in attesa di approvazione: vedrai i prezzi appena attivata.'}</p>`}
+  : `<h1>Stock disponibili</h1><p class="sub">${canSeePrices() ? 'Prezzi riservati visibili.' : 'La tua registrazione è in attesa di verifica: vedrai i prezzi appena il tuo account sarà attivato. Per accelerare scrivici su WhatsApp.'}</p>`}
   ${usedCats.length > 1 ? `<nav class="cats"><button class="cat ${filter === 'tutti' ? 'on' : ''}" data-f="tutti">Tutti<span>${lots.length}</span></button>${usedCats.map(c => `<button class="cat ${filter === c.slug ? 'on' : ''}" data-f="${c.slug}">${esc(c.name)}<span>${lots.filter(l => l.category === c.slug).length}</span></button>`).join('')}</nav>` : ''}
   <div class="grid">${list.map(l => `
     <a class="lot" href="#lotto-${l.id}">
@@ -372,7 +372,7 @@ async function viewLot(A, id){
         ${l.subs.map(s => `<div class="sublot"><span>${esc(s.name)}</span><span class="row">${priceOr(s.price)}${show && !sold ? `<button class="btn s" data-req="${esc(s.name)}" data-lot="${l.id}">Richiedi</button>` : ''}</span></div>`).join('')}
         <div class="row" style="margin-top:14px">
           ${sold ? '<span class="meta">Questo lotto è stato venduto. Chiedici se arrivano stock simili.</span>' :
-            !user ? `<button class="btn y" data-act="register">Registrati per i prezzi</button>` :
+            !user ? `<button class="btn y" data-act="register">Registrati per i prezzi</button>` : !show ? `<span class="meta">Account in attesa di verifica: vedrai i prezzi appena attivato.</span>` :
             `<button class="btn y" data-req="Lotto intero" data-lot="${l.id}">Compra tutto il lotto</button>`}
           <button class="btn o" data-req="Informazioni" data-lot="${l.id}">Chiedi informazioni</button>
         </div>
@@ -610,12 +610,13 @@ async function viewRequests(A){
 
 /* ========== GESTIONE: RIVENDITORI ========== */
 async function viewResellers(A){
-  const { data, error } = await sb.from('profiles').select('*').order('created_at', {ascending: false});
+  const { data: raw, error } = await sb.from('profiles').select('*').order('created_at', {ascending: false});
+  const data = (raw || []).sort((a, b) => (a.approved === b.approved ? 0 : a.approved ? 1 : -1));
   if (error) throw error;
-  A.innerHTML = `<h1>Rivenditori registrati</h1><p class="sub">${data.filter(p => p.role !== 'admin').length} rivenditori. Puoi bloccare chi non deve vedere i prezzi.</p>
+  A.innerHTML = `<h1>Rivenditori registrati</h1><p class="sub">${data.filter(p => p.role !== 'admin').length} rivenditori, di cui <b>${data.filter(p => p.role !== 'admin' && !p.approved).length} in attesa</b>. Solo chi approvi tu vede i prezzi.</p>
   <div class="panel">${data.map(p => `<div class="grp">
     <div class="n"><b>${esc(p.ragione_sociale || p.email)}${p.role === 'admin' ? ' <span class="pill">Tu</span>' : ''}</b><small>${esc(p.email)} · P.IVA ${esc(p.piva || '–')} · ${esc(p.telefono || '–')}</small></div>
-    ${p.role === 'admin' ? '' : `<button class="btn s ${p.approved ? 'o' : 'g'}" data-appr="${p.id}" data-v="${p.approved}">${p.approved ? 'Blocca prezzi' : 'Approva'}</button>`}
+    ${p.role === 'admin' ? '' : `${p.approved ? '<span class="ok">✓ Attivo</span>' : '<span class="st nuova">In attesa</span>'}<button class="btn s ${p.approved ? 'o' : 'g'}" data-appr="${p.id}" data-v="${p.approved}">${p.approved ? 'Blocca prezzi' : 'Approva'}</button>`}
   </div>`).join('')}</div>`;
 }
 
@@ -737,7 +738,7 @@ function loginForm(msg = ''){
   <p class="meta" style="margin-top:14px">Non hai un account? <a href="#" data-act="register">Registrati</a> · <a href="#" data-act="forgot">Password dimenticata?</a></p>`);
 }
 function registerForm(){
-  modal(`<h2>Registrazione rivenditore</h2><p class="meta">Gratis, per vedere i prezzi riservati.</p><form id="regForm">
+  modal(`<h2>Registrazione rivenditore</h2><p class="meta">Gratuita e riservata ai rivenditori con partita IVA. Dopo la verifica dei dati vedrai i prezzi riservati.</p><form id="regForm">
   <label>Ragione sociale</label><input id="rRs" required><label>Partita IVA</label><input id="rPiva" required inputmode="numeric">
   <label>Telefono / WhatsApp</label><input id="rTel" required inputmode="tel"><label>Email</label><input type="email" id="rEmail" required autocomplete="email">
   <label>Password (min. 8 caratteri)</label><input type="password" id="rPass" required minlength="8" autocomplete="new-password">
@@ -825,7 +826,7 @@ document.addEventListener('click', async e => {
       toast(`${ins.length} gruppi importati`); return render();
     }
     if (d.handled) { const { error } = await sb.from('requests').update({handled: d.v !== 'true'}).eq('id', +d.handled); if (error) throw error; refreshCounters(); return render(); }
-    if (d.appr) { const { error } = await sb.from('profiles').update({approved: d.v !== 'true'}).eq('id', d.appr); if (error) throw error; return render(); }
+    if (d.appr) { const { error } = await sb.from('profiles').update({approved: d.v !== 'true'}).eq('id', d.appr); if (error) throw error; toast(d.v !== 'true' ? 'Rivenditore approvato: ora vede i prezzi' : 'Prezzi bloccati per questo rivenditore'); refreshCounters(); return render(); }
   } catch(err) { fail(err); }
 });
 
@@ -862,8 +863,8 @@ document.addEventListener('submit', async e => {
       const { data, error } = await sb.auth.signUp({email: $('#rEmail').value.trim(), password: $('#rPass').value,
         options: {emailRedirectTo: location.origin + location.pathname, data: {ragione_sociale: $('#rRs').value.trim(), piva: $('#rPiva').value.trim(), telefono: $('#rTel').value.trim()}}});
       if (error) { $('#rErr').textContent = /registered/i.test(error.message) ? 'Questa email è già registrata: accedi.' : 'Errore: ' + error.message; return; }
-      if (data.session) { closeModal(); toast('Registrato! Ora vedi i prezzi'); }
-      else modal(`<h2>Controlla la tua email</h2><p>Ti abbiamo mandato un link di conferma a <b>${esc($('#rEmail')?.value || '')}</b>. Aprilo e poi accedi per vedere i prezzi.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`);
+      if (data.session) { modal(`<h2>Registrazione ricevuta ✅</h2><p>Grazie! Verifichiamo i tuoi dati e attiviamo il tuo account rivenditore al più presto: da quel momento vedrai tutti i prezzi.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`); }
+      else modal(`<h2>Controlla la tua email</h2><p>Ti abbiamo mandato un link di conferma a <b>${esc($('#rEmail')?.value || '')}</b>: aprilo per confermare l’indirizzo. Poi verifichiamo i tuoi dati e attiviamo il tuo account rivenditore: da quel momento vedrai tutti i prezzi.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`);
       return;
     }
     if (f.id === 'forgotForm') {
