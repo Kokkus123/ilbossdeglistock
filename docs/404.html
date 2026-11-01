@@ -278,7 +278,7 @@ function renderFooter(){
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v13</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v14</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -333,6 +333,15 @@ function renderHeader(){
   const cur = r === 'lotto' ? '' : r === 'modifica' ? 'gestione' : r === 'vetrina' ? '' : r;
   $('#tabs').innerHTML = tabs.map(([k, n]) => `<a class="tab ${cur === k ? 'on' : ''}" href="#${k}">${n}</a>`).join('');
 }
+
+/* ========== AVVISI EMAIL A info@ (FormSubmit, gratuito) ========== */
+function avvisa(oggetto, campi){
+  try {
+    fetch('https://formsubmit.co/ajax/' + A_MAIL_AVVISI, {method: 'POST', headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+      body: JSON.stringify({_subject: oggetto, _template: 'table', _captcha: 'false', ...campi, Gestione: 'https://www.ilbossdeglistock.it/'})}).catch(() => {});
+  } catch (e) {}
+}
+const A_MAIL_AVVISI = 'info@ilbossdeglistock.it';
 
 /* ========== VETRINA ========== */
 // Ordine: prima i lotti in evidenza (1,2,3 scelti dall'admin), poi tutti gli altri mescolati a caso
@@ -712,6 +721,7 @@ async function sendProposal(){
       photos: paths, user_id: user?.id || null
     });
     if (error) throw error;
+    avvisa('📦 Nuova proposta di stock: ' + $('#pTitle').value.trim(), {Merce: $('#pTitle').value.trim(), 'Quantità': $('#pQty').value.trim(), 'Prezzo richiesto': $('#pPrice').value.trim(), Dove: $('#pLoc').value.trim(), Descrizione: $('#pDesc').value.trim(), Nome: $('#pName').value.trim(), Azienda: $('#pCompany').value.trim(), Telefono: phone || '', Email: email || '', Foto: paths.length + ' (le vedi nella scheda Proposte)'});
     $('#app').innerHTML = `<div class="panel" style="text-align:center;padding:40px 20px"><h1>Proposta inviata ✅</h1><p class="sub" style="margin:10px 0 20px">Grazie! Valutiamo la tua merce e ti ricontattiamo al più presto.</p><div class="row" style="justify-content:center"><a class="btn y" href="#">Torna alla vetrina</a><button class="btn o" data-act="newprop">Invia un'altra proposta</button></div></div>`;
     window.scrollTo({top: 0});
   } catch(e) { err.textContent = 'Errore durante l’invio: ' + (e.message || e) + '. Riprova.'; btn.disabled = false; btn.textContent = 'Invia proposta'; }
@@ -885,9 +895,11 @@ document.addEventListener('submit', async e => {
       closeModal(); toast('Bentornato!'); return;
     }
     if (f.id === 'regForm') {
+      const reg = {Azienda: $('#rRs').value.trim(), 'Partita IVA': $('#rPiva').value.trim(), Telefono: $('#rTel').value.trim(), Email: $('#rEmail').value.trim()};
       const { data, error } = await sb.auth.signUp({email: $('#rEmail').value.trim(), password: $('#rPass').value,
         options: {emailRedirectTo: location.origin + location.pathname, data: {ragione_sociale: $('#rRs').value.trim(), piva: $('#rPiva').value.trim(), telefono: $('#rTel').value.trim()}}});
       if (error) { $('#rErr').textContent = /registered/i.test(error.message) ? 'Questa email è già registrata: accedi.' : 'Errore: ' + error.message; return; }
+      avvisa('🆕 Nuovo rivenditore registrato: ' + reg.Azienda, {...reg, 'Cosa fare': 'Entra nel sito, scheda Rivenditori, e premi Approva per fargli vedere i prezzi.'});
       if (data.session) { modal(`<h2>Registrazione ricevuta ✅</h2><p>Grazie! Verifichiamo i tuoi dati e attiviamo il tuo account rivenditore al più presto: da quel momento vedrai tutti i prezzi.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`); }
       else modal(`<h2>Controlla la tua email</h2><p>Ti abbiamo mandato un link di conferma a <b>${esc($('#rEmail')?.value || '')}</b>: aprilo per confermare l’indirizzo. Poi verifichiamo i tuoi dati e attiviamo il tuo account rivenditore: da quel momento vedrai tutti i prezzi.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`);
       return;
@@ -898,6 +910,7 @@ document.addEventListener('submit', async e => {
     }
     if (f.id === 'reqForm') {
       const { error } = await sb.from('requests').insert({lot_id: +f.dataset.lot, kind: f.dataset.kind, name: $('#qName').value.trim(), contact: $('#qContact').value.trim(), message: $('#qMsg').value.trim(), user_id: user?.id || null});
+      if (!error) avvisa('📩 Nuova richiesta: ' + f.dataset.kind, {Lotto: '#' + f.dataset.lot + ' – https://www.ilbossdeglistock.it/#lotto-' + f.dataset.lot, Tipo: f.dataset.kind, Nome: $('#qName').value.trim(), Contatto: $('#qContact').value.trim(), Messaggio: $('#qMsg').value.trim()});
       if (error) { $('#qErr').textContent = 'Errore, riprova.'; return; }
       modal(`<h2>Richiesta inviata ✅</h2><p>Grazie! Ti ricontattiamo al più presto.</p><div class="row" style="margin-top:14px"><button class="btn y" data-close>Ok</button></div>`); return;
     }
