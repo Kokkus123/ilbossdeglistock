@@ -8,8 +8,11 @@
 <meta property="og:title" content="Il Boss degli Stock – Stock per rivenditori">
 <meta property="og:description" content="Lotti interi, mezzi lotti e bancali misti. Registrati per vedere i prezzi.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="logo.png">
-<link rel="icon" href="logo.png">
+<meta property="og:image" content="https://www.ilbossdeglistock.it/logo.png">
+<link rel="icon" href="/logo.png">
+<link rel="canonical" href="https://www.ilbossdeglistock.it/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<!--ORGLD--><!--/ORGLD-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -133,14 +136,14 @@ footer .fl{border-top:1px solid #555;padding-top:12px;font-size:12px}
 <header>
   <div class="wrap">
     <div class="bar">
-      <a class="logo" href="#"><img src="logo.png" alt="Il Boss degli Stock"></a>
+      <a class="logo" href="#"><img src="/logo.png" alt="Il Boss degli Stock"></a>
       <div class="spacer"></div>
       <div id="authbox"></div>
     </div>
     <nav class="tabs" id="tabs"></nav>
   </div>
 </header>
-<main><div class="wrap" id="app"><div class="loading">Caricamento…</div></div></main>
+<main><div class="wrap" id="app"><!--SEO--><!--/SEO--></div></main>
 <footer><div class="wrap" id="foot"></div></footer>
 <a class="wa-float" id="waFloat" target="_blank" rel="noopener" aria-label="Scrivici su WhatsApp"><svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.9 2 7L3.2 29l6.6-2c2 1.1 4.2 1.7 6.3 1.7 7 0 12.7-5.7 12.7-12.6S23 3 16 3zm0 23.2c-2 0-3.9-.6-5.6-1.6l-.4-.2-3.9 1.2 1.3-3.8-.3-.4a10.4 10.4 0 0 1-1.6-5.6C5.5 9.9 10.2 5.3 16 5.3s10.5 4.6 10.5 10.3S21.8 26.2 16 26.2zm5.8-7.7c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.2 1.4 3.4c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg></a>
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
@@ -232,9 +235,11 @@ async function fetchLotPrices(){
   return Object.fromEntries((data || []).map(p => [p.lot_id, p.price]));
 }
 
+const slugify = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70).replace(/-+$/, '');
+const lotUrl = l => `https://${SITE_URL}/lotti/${l.id}-${slugify(l.title)}/`;
 /* ========== TESTI FACEBOOK ========== */
 function fbText(lot, variant){
-  const c = catOf(lot.category), link = `${SITE_URL}/#lotto-${lot.id}`;
+  const c = catOf(lot.category), link = lotUrl(lot);
   const top = (lot.items || []).slice(0, 5).map(r => `• ${r.name}${r.qty ? ' – ' + num(r.qty) + ' pz' : ''}`).join('\n');
   const hasSubs = (lot.subs || []).length > 0;
   const v = [
@@ -266,11 +271,11 @@ window.addEventListener('hashchange', () => { closeModal(); render(); });
 function renderFooter(){
   const A = AZIENDA;
   $('#foot').innerHTML = `<div class="fcols">
-    <div><b>Il Boss degli Stock</b><br>Stock, liquidazioni e bancali per rivenditori.<br><a href="#proponi">Vendi il tuo stock</a> · <a href="#contatti">Contatti</a></div>
+    <div><b>Il Boss degli Stock</b><br>Stock, liquidazioni e bancali per rivenditori.<br><a href="#proponi">Vendi il tuo stock</a> · <a href="#contatti">Contatti</a> · <a href="/lotti/">Catalogo lotti</a></div>
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v10</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v11</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -534,7 +539,7 @@ async function viewKit(A, id){
       ${todayDone ? '<span class="ok">✓ Oggi</span>' : `<button class="btn s g" data-post="${l.id}|${g.id}">Pubblicato</button>`}
     </div>`; }).join('') || '<div class="empty">Nessun gruppo per questa categoria: <a href="#gruppi">aggiungilo in “Gruppi”</a>.</div>'}
   </div>
-  <div class="panel"><h2>Link del lotto</h2><p class="meta">Da usare su WhatsApp, Subito o nei commenti.</p><div class="row"><input readonly value="https://${SITE_URL}/#lotto-${l.id}" style="flex:1"><button class="btn s" data-copylink="https://${SITE_URL}/#lotto-${l.id}">Copia</button></div></div>`;
+  <div class="panel"><h2>Link del lotto</h2><p class="meta">Da usare su WhatsApp, Subito o nei commenti.</p><p class="meta" style="margin:4px 0 8px">La pagina pubblica del lotto (con foto, senza prezzi) appare entro un'ora dalla pubblicazione e mostra l'anteprima con foto su Facebook e WhatsApp.</p><div class="row"><input readonly value="${lotUrl(l)}" style="flex:1"><button class="btn s" data-copylink="${lotUrl(l)}">Copia</button></div></div>`;
 }
 
 async function sharePhotos(l){
