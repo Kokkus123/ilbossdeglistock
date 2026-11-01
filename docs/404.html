@@ -270,7 +270,7 @@ function renderFooter(){
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v7</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v8</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -379,8 +379,8 @@ async function viewLot(A, id){
     </div>
   </div>
   ${l.items.length ? `<div class="panel"><h2>Listino</h2>
-    <table><tr><th>Articolo</th><th class="r">Quantità</th><th class="r">Prezzo cad.</th></tr>
-    ${l.items.map(r => `<tr><td>${esc(r.name)}</td><td class="r">${num(r.qty)}</td><td class="r ${show ? '' : 'blur'}">${show ? (r.price != null ? eur(r.price) : '–') : '0,00 €'}</td></tr>`).join('')}</table>
+    <table><tr><th>Articolo</th><th class="r">Quantità</th><th class="r">Prezzo</th></tr>
+    ${l.items.map(r => `<tr><td>${esc(r.name)}</td><td class="r">${r.qty ? num(r.qty) : '–'}</td><td class="r ${show ? '' : 'blur'}">${show ? (r.price != null ? eur(r.price) : '–') : '0,00 €'}</td></tr>`).join('')}</table>
     ${show ? '' : '<p class="meta" style="margin-top:10px">🔒 I prezzi si vedono dopo la registrazione come rivenditore.</p>'}
   </div>` : ''}`;
   A._lot = l; A._gi = 0;
