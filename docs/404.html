@@ -270,7 +270,7 @@ function renderFooter(){
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v8</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v9</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -321,6 +321,7 @@ function renderHeader(){
     ['gruppi', 'Gruppi'], ['rivenditori', 'Rivenditori']
   ] : [['', 'Vetrina'], ['proponi', 'Vendi il tuo stock'], ['contatti', 'Contatti']];
   if (isAdmin()) tabs.splice(6, 0, ['proposte', 'Proposte' + (propCount ? `<span class="badge">${propCount}</span>` : '')]);
+  if (isAdmin()) tabs.push(['contatti', 'Contatti']);
   const cur = r === 'lotto' ? '' : r === 'modifica' ? 'gestione' : r === 'vetrina' ? '' : r;
   $('#tabs').innerHTML = tabs.map(([k, n]) => `<a class="tab ${cur === k ? 'on' : ''}" href="#${k}">${n}</a>`).join('');
 }
