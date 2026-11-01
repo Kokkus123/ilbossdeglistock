@@ -116,6 +116,15 @@ footer{background:var(--ink);color:#bdb6a8;font-size:13px;padding:22px 0}
 .st{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:5px;background:#f1ece0}
 .st.nuova{background:#c9512c;color:#fff}.st.accettata{background:var(--green);color:#fff}.st.rifiutata{background:#ddd;color:#777}
 .hp{position:absolute;left:-9999px}
+.wa-float{position:fixed;right:16px;bottom:18px;z-index:30;width:56px;height:56px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.wa-float svg{width:30px;height:30px;fill:#fff}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:16px}
+.cbox{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px}
+.cbox h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cbox p{margin:0;font-size:15px}
+footer .fcols{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;padding:8px 0 14px}
+footer b{color:#fff}footer a{color:#fff}
+footer .fl{border-top:1px solid #555;padding-top:12px;font-size:12px}
 .loading{text-align:center;padding:50px;color:var(--muted)}
 @media(max-width:760px){.two{grid-template-columns:1fr}h1{font-size:28px}.grp{flex-wrap:wrap}.grp .n{flex:1 0 calc(100% - 50px)}.grp .btn{flex:1}}
 </style>
@@ -132,7 +141,8 @@ footer{background:var(--ink);color:#bdb6a8;font-size:13px;padding:22px 0}
   </div>
 </header>
 <main><div class="wrap" id="app"><div class="loading">Caricamento…</div></div></main>
-<footer><div class="wrap">Il Boss degli Stock · Stock e bancali per rivenditori · Carpi (MO) · <a href="#proponi" style="color:#fff">Vendi il tuo stock</a> · <span style="opacity:.5">v5</span></div></footer>
+<footer><div class="wrap" id="foot"></div></footer>
+<a class="wa-float" id="waFloat" target="_blank" rel="noopener" aria-label="Scrivici su WhatsApp"><svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.9 2 7L3.2 29l6.6-2c2 1.1 4.2 1.7 6.3 1.7 7 0 12.7-5.7 12.7-12.6S23 3 16 3zm0 23.2c-2 0-3.9-.6-5.6-1.6l-.4-.2-3.9 1.2 1.3-3.8-.3-.4a10.4 10.4 0 0 1-1.6-5.6C5.5 9.9 10.2 5.3 16 5.3s10.5 4.6 10.5 10.3S21.8 26.2 16 26.2zm5.8-7.7c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.2 1.4 3.4c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg></a>
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -144,6 +154,13 @@ const SUPABASE_URL = 'https://jyeqwltlgmzbgyzhkbmy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_O70O2QL0HEh0bSgXhD6r_A_eub3RZdl';
 const SITE_URL = 'www.ilbossdeglistock.it';
 const BUCKET = 'lot-photos';
+const AZIENDA = {
+  nome: 'Olmo S.r.l.', capitale: '30.000 € i.v.', piva: '',
+  legale: 'Via Camperio 9, 20123 Milano (MI)',
+  magazzino: 'Via Lombardia 19/D, 41012 Carpi (MO)',
+  tel: '349 410 5409', wa: '393494105409', email: 'info@ilbossdeglistock.it',
+  orari: 'Lunedì – venerdì 10:00–13:00 e 15:00–18:00'
+};
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ========== STATO ========== */
@@ -246,6 +263,16 @@ function route(){ return (location.hash || '#').slice(1); }
 function go(h){ if (location.hash === '#' + h) render(); else location.hash = h; }
 window.addEventListener('hashchange', () => { closeModal(); render(); });
 
+function renderFooter(){
+  const A = AZIENDA;
+  $('#foot').innerHTML = `<div class="fcols">
+    <div><b>Il Boss degli Stock</b><br>Stock, liquidazioni e bancali per rivenditori.<br><a href="#proponi">Vendi il tuo stock</a> · <a href="#contatti">Contatti</a></div>
+    <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
+    <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
+  </div>
+  <div class="fl">${A.nome} · Sede legale ${A.legale}${A.piva ? ' · P.IVA ' + A.piva : ''} · Capitale sociale ${A.capitale} · <span style="opacity:.5">v6</span></div>`;
+  const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
+}
 async function render(){
   renderHeader();
   const r = route(), A = $('#app');
@@ -266,6 +293,7 @@ async function render(){
       if (base === 'proposte') return await viewProposals(A);
     }
     if (r === 'proponi') return viewPropose(A);
+    if (r === 'contatti') return viewContacts(A);
     if (r.startsWith('lotto-')) { A.innerHTML = '<div class="loading">Caricamento…</div>'; return await viewLot(A, +r.split('-')[1]); }
     await viewShop(A);
   } catch(e) { fail(e); A.innerHTML = `<div class="empty">Si è verificato un errore. Riprova.</div>`; }
@@ -291,7 +319,7 @@ function renderHeader(){
     ['rinnovi', 'Da rinnovare' + (dueCount ? `<span class="badge">${dueCount}</span>` : '')],
     ['richieste', 'Richieste' + (reqCount ? `<span class="badge">${reqCount}</span>` : '')],
     ['gruppi', 'Gruppi'], ['rivenditori', 'Rivenditori']
-  ] : [['', 'Vetrina'], ['proponi', 'Vendi il tuo stock']];
+  ] : [['', 'Vetrina'], ['proponi', 'Vendi il tuo stock'], ['contatti', 'Contatti']];
   if (isAdmin()) tabs.splice(6, 0, ['proposte', 'Proposte' + (propCount ? `<span class="badge">${propCount}</span>` : '')]);
   const cur = r === 'lotto' ? '' : r === 'modifica' ? 'gestione' : r === 'vetrina' ? '' : r;
   $('#tabs').innerHTML = tabs.map(([k, n]) => `<a class="tab ${cur === k ? 'on' : ''}" href="#${k}">${n}</a>`).join('');
@@ -590,6 +618,22 @@ async function viewResellers(A){
   </div>`).join('')}</div>`;
 }
 
+/* ========== CONTATTI ========== */
+function viewContacts(A){
+  const Z = AZIENDA, maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(Z.magazzino);
+  A.innerHTML = `<h1>Contatti</h1><p class="sub">Siamo a Carpi (MO). Per informazioni sui lotti, quotazioni o per proporci la tua merce, scrivici o chiamaci.</p>
+  <div class="contact-grid">
+    <div class="cbox"><h3>Telefono e WhatsApp</h3><p><b>${Z.tel}</b></p><div class="row" style="margin-top:10px"><a class="btn s g" href="https://wa.me/${Z.wa}" target="_blank" rel="noopener">WhatsApp</a><a class="btn s o" href="tel:+39${Z.tel.replace(/\s/g, '')}">Chiama</a></div></div>
+    <div class="cbox"><h3>Email</h3><p><b>${Z.email}</b></p><div class="row" style="margin-top:10px"><a class="btn s o" href="mailto:${Z.email}">Scrivi una email</a></div></div>
+    <div class="cbox"><h3>Orari</h3><p>${Z.orari}</p></div>
+    <div class="cbox"><h3>Magazzino e sede operativa</h3><p>${Z.magazzino}</p><p class="meta" style="margin-top:4px">Visione merce e ritiro su appuntamento</p><div class="row" style="margin-top:10px"><a class="btn s o" href="${maps}" target="_blank" rel="noopener">Apri in Maps</a></div></div>
+  </div>
+  <div class="panel"><h2 style="font-size:20px">Dati aziendali</h2>
+    <p style="margin:6px 0 0"><b>${Z.nome}</b><br>Sede legale: ${Z.legale}<br>Sede operativa: ${Z.magazzino}${Z.piva ? '<br>P.IVA: ' + Z.piva : ''}<br>Capitale sociale: ${Z.capitale}</p>
+  </div>
+  ${sellBanner()}`;
+}
+
 /* ========== VENDI IL TUO STOCK ========== */
 let propPhotos = [];
 function viewPropose(A){
@@ -847,6 +891,7 @@ document.addEventListener('submit', async e => {
 
 
 /* ========== AVVIO ========== */
+renderFooter();
 try { await loadCats(); } catch(e) { fail(e); }
 sb.auth.onAuthStateChange(async (ev, session) => {
   const prev = user?.id;
