@@ -278,7 +278,7 @@ function renderFooter(){
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v12</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v13</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -343,7 +343,6 @@ function shopOrder(lots){
   const rank = l => l.status === 'venduto' ? 2 : l.pin ? 0 : 1;
   return [...lots].sort((a, b) => rank(a) - rank(b) || (rank(a) === 0 ? a.pin - b.pin : rnd(a.id) - rnd(b.id)));
 }
-const isNew = l => Date.now() - new Date(l.created_at) < 7 * 864e5;
 async function viewShop(A){
   const [lots, prices] = await Promise.all([fetchLots(), fetchLotPrices()]);
   const list = shopOrder(lots.filter(l => filter === 'tutti' || l.category === filter));
@@ -354,7 +353,7 @@ async function viewShop(A){
   ${usedCats.length > 1 ? `<nav class="cats"><button class="cat ${filter === 'tutti' ? 'on' : ''}" data-f="tutti">Tutti<span>${lots.length}</span></button>${usedCats.map(c => `<button class="cat ${filter === c.slug ? 'on' : ''}" data-f="${c.slug}">${esc(c.name)}<span>${lots.filter(l => l.category === c.slug).length}</span></button>`).join('')}</nav>` : ''}
   <div class="grid">${list.map(l => `
     <a class="lot" href="#lotto-${l.id}">
-      <div style="position:relative">${phDiv(l)}<span class="tag">${esc(catOf(l.category).name)}</span>${l.status === 'venduto' ? '<div class="soldov">VENDUTO</div>' : l.pin ? '<span class="evid">★ In evidenza</span>' : isNew(l) ? '<span class="nuovo">Nuovo</span>' : ''}</div>
+      <div style="position:relative">${phDiv(l)}<span class="tag">${esc(catOf(l.category).name)}</span>${l.status === 'venduto' ? '<div class="soldov">VENDUTO</div>' : l.pin ? '<span class="evid">★ In evidenza</span>' : ''}</div>
       <div class="b"><h3>${esc(l.title)}</h3><div class="meta">${l.pieces ? num(l.pieces) + ' pezzi' : ''}</div>
       <div style="margin-top:auto">${canSeePrices() ? (prices[l.id] != null ? `<span class="price">${eur(prices[l.id])}</span>` : '<span class="meta">Prezzo su richiesta</span>') : '<span class="lock">🔒 Prezzo riservato ai rivenditori</span>'}</div></div>
     </a>`).join('') || '<div class="empty">Nessun lotto disponibile al momento. Torna presto!</div>'}</div>
