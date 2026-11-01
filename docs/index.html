@@ -104,6 +104,15 @@ td.r,th.r{text-align:right}
 .err{color:var(--red);font-size:13px;margin-top:8px}
 .note{background:#fdf3ee;border-radius:10px;padding:10px 12px;font-size:13px}
 footer{background:var(--ink);color:#bdb6a8;font-size:13px;padding:22px 0}
+.sell{background:linear-gradient(120deg,#c9512c,#a63f20);color:#fff;border-radius:18px;padding:24px;margin:26px 0 6px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.sell h2{color:#fff;margin:0 0 4px;font-size:26px}.sell p{margin:0;color:#ffe6dc}.sell .btn{background:#fff;color:#a63f20}
+.sell-mini{display:inline-block;margin-left:8px}
+.prop{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;background:#fff}
+.prop .ph-row{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.prop .ph-row a{width:74px;height:74px;border-radius:8px;background:#eee center/cover;display:block;border:1px solid var(--line)}
+.st{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:5px;background:#f1ece0}
+.st.nuova{background:#c9512c;color:#fff}.st.accettata{background:var(--green);color:#fff}.st.rifiutata{background:#ddd;color:#777}
+.hp{position:absolute;left:-9999px}
 .loading{text-align:center;padding:50px;color:var(--muted)}
 @media(max-width:760px){.two{grid-template-columns:1fr}h1{font-size:28px}.grp{flex-wrap:wrap}.grp .n{flex:1 0 calc(100% - 50px)}.grp .btn{flex:1}}
 </style>
@@ -120,7 +129,7 @@ footer{background:var(--ink);color:#bdb6a8;font-size:13px;padding:22px 0}
   </div>
 </header>
 <main><div class="wrap" id="app"><div class="loading">Caricamento…</div></div></main>
-<footer><div class="wrap">Il Boss degli Stock · Stock e bancali per rivenditori · Carpi (MO)</div></footer>
+<footer><div class="wrap">Il Boss degli Stock · Stock e bancali per rivenditori · Carpi (MO) · <a href="#proponi" style="color:#fff">Vendi il tuo stock</a></div></footer>
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -236,7 +245,7 @@ window.addEventListener('hashchange', () => { closeModal(); render(); });
 async function render(){
   renderHeader();
   const r = route(), A = $('#app');
-  const adminViews = ['gestione', 'nuovo', 'kit', 'rinnovi', 'gruppi', 'richieste', 'rivenditori'];
+  const adminViews = ['gestione', 'nuovo', 'kit', 'rinnovi', 'gruppi', 'richieste', 'rivenditori', 'proposte'];
   const base = r.split('-')[0];
   try {
     if (adminViews.includes(base) || r.startsWith('modifica-') || r.startsWith('kit-')) {
@@ -250,19 +259,21 @@ async function render(){
       if (base === 'gruppi') return await viewGroups(A);
       if (base === 'richieste') return await viewRequests(A);
       if (base === 'rivenditori') return await viewResellers(A);
+      if (base === 'proposte') return await viewProposals(A);
     }
+    if (r === 'proponi') return viewPropose(A);
     if (r.startsWith('lotto-')) { A.innerHTML = '<div class="loading">Caricamento…</div>'; return await viewLot(A, +r.split('-')[1]); }
     await viewShop(A);
   } catch(e) { fail(e); A.innerHTML = `<div class="empty">Si è verificato un errore. Riprova.</div>`; }
   window.scrollTo({top: 0});
 }
 
-let dueCount = 0, reqCount = 0;
+let dueCount = 0, reqCount = 0, propCount = 0;
 async function refreshCounters(){
   if (!isAdmin()) return;
   try {
-    const [d, r] = await Promise.all([computeDue(), sb.from('requests').select('id', {count: 'exact', head: true}).eq('handled', false)]);
-    dueCount = d.length; reqCount = r.count || 0; renderHeader();
+    const [d, r, pr] = await Promise.all([computeDue(), sb.from('requests').select('id', {count: 'exact', head: true}).eq('handled', false), sb.from('proposals').select('id', {count: 'exact', head: true}).eq('status', 'nuova')]);
+    dueCount = d.length; reqCount = r.count || 0; propCount = pr.count || 0; renderHeader();
   } catch(e) {}
 }
 
@@ -276,7 +287,8 @@ function renderHeader(){
     ['rinnovi', 'Da rinnovare' + (dueCount ? `<span class="badge">${dueCount}</span>` : '')],
     ['richieste', 'Richieste' + (reqCount ? `<span class="badge">${reqCount}</span>` : '')],
     ['gruppi', 'Gruppi'], ['rivenditori', 'Rivenditori']
-  ] : [];
+  ] : [['', 'Vetrina'], ['proponi', 'Vendi il tuo stock']];
+  if (isAdmin()) tabs.splice(6, 0, ['proposte', 'Proposte' + (propCount ? `<span class="badge">${propCount}</span>` : '')]);
   const cur = r === 'lotto' ? '' : r === 'modifica' ? 'gestione' : r === 'vetrina' ? '' : r;
   $('#tabs').innerHTML = tabs.map(([k, n]) => `<a class="tab ${cur === k ? 'on' : ''}" href="#${k}">${n}</a>`).join('');
 }
@@ -287,7 +299,7 @@ async function viewShop(A){
   const list = lots.filter(l => filter === 'tutti' || l.category === filter);
   const usedCats = cats.filter(c => lots.some(l => l.category === c.slug));
   A.innerHTML = `
-  ${!user ? `<div class="hero"><h1>Stock per <em>rivenditori</em></h1><p>Lotti interi, mezzi lotti e bancali misti a prezzi da stock. Registrati gratis con la tua partita IVA per vedere i prezzi.</p><button class="btn y" data-act="register">Registrati e vedi i prezzi</button></div>`
+  ${!user ? `<div class="hero"><h1>Stock per <em>rivenditori</em></h1><p>Lotti interi, mezzi lotti e bancali misti a prezzi da stock. Registrati gratis con la tua partita IVA per vedere i prezzi.</p><div class="row"><button class="btn y" data-act="register">Registrati e vedi i prezzi</button><a class="btn o" href="#proponi" style="border-color:#fff;color:#fff">Vendi il tuo stock</a></div></div>`
   : `<h1>Stock disponibili</h1><p class="sub">${canSeePrices() ? 'Prezzi riservati visibili.' : 'La tua registrazione è in attesa di approvazione: vedrai i prezzi appena attivata.'}</p>`}
   ${usedCats.length > 1 ? `<nav class="cats"><button class="cat ${filter === 'tutti' ? 'on' : ''}" data-f="tutti">Tutti<span>${lots.length}</span></button>${usedCats.map(c => `<button class="cat ${filter === c.slug ? 'on' : ''}" data-f="${c.slug}">${esc(c.name)}<span>${lots.filter(l => l.category === c.slug).length}</span></button>`).join('')}</nav>` : ''}
   <div class="grid">${list.map(l => `
@@ -295,7 +307,11 @@ async function viewShop(A){
       <div style="position:relative">${phDiv(l)}<span class="tag">${esc(catOf(l.category).name)}</span>${l.status === 'venduto' ? '<div class="soldov">VENDUTO</div>' : ''}</div>
       <div class="b"><h3>${esc(l.title)}</h3><div class="meta">${l.pieces ? num(l.pieces) + ' pezzi' : ''}</div>
       <div style="margin-top:auto">${canSeePrices() ? (prices[l.id] != null ? `<span class="price">${eur(prices[l.id])}</span>` : '<span class="meta">Prezzo su richiesta</span>') : '<span class="lock">🔒 Prezzo riservato ai rivenditori</span>'}</div></div>
-    </a>`).join('') || '<div class="empty">Nessun lotto disponibile al momento. Torna presto!</div>'}</div>`;
+    </a>`).join('') || '<div class="empty">Nessun lotto disponibile al momento. Torna presto!</div>'}</div>
+  ${sellBanner()}`;
+}
+function sellBanner(){
+  return `<div class="sell"><div style="flex:1;min-width:220px"><h2>Hai uno stock da vendere?</h2><p>Rimanenze, fine serie, fallimenti, bancali, resi: valutiamo e acquistiamo stock di ogni genere. Mandaci foto e prezzo, ti rispondiamo in breve.</p></div><a class="btn" href="#proponi">Proponi il tuo stock</a></div>`;
 }
 
 /* ========== SCHEDA LOTTO ========== */
@@ -570,6 +586,101 @@ async function viewResellers(A){
   </div>`).join('')}</div>`;
 }
 
+/* ========== VENDI IL TUO STOCK ========== */
+let propPhotos = [];
+function viewPropose(A){
+  propPhotos = [];
+  A.innerHTML = `<h1>Vendi il tuo stock</h1>
+  <p class="sub">Hai merce da liquidare? Rimanenze di magazzino, fine serie, stock da fallimenti, resi, bancali misti: acquistiamo lotti di ogni dimensione e categoria. Compila il modulo con foto e prezzo richiesto: valutiamo e ti ricontattiamo al più presto. Nessun impegno.</p>
+  <form class="panel" id="propForm" autocomplete="on">
+    <h2 style="font-size:20px">La merce</h2>
+    <label style="margin-top:6px">Cosa vendi?</label><input id="pTitle" required maxlength="200" placeholder="Es. 2.000 pentole antiaderenti, bancale misto casalinghi…">
+    <label>Categoria</label><select id="pCat"><option value="">— Scegli —</option>${cats.map(c => `<option>${esc(c.name)}</option>`).join('')}<option>Altro</option></select>
+    <div class="two" style="gap:12px">
+      <div><label>Quantità</label><input id="pQty" placeholder="Es. 2.000 pezzi, 3 bancali"></div>
+      <div><label>Prezzo richiesto</label><input id="pPrice" placeholder="Es. 3.000 € tutto, 1,50 €/pz"></div>
+    </div>
+    <label>Dove si trova la merce?</label><input id="pLoc" placeholder="Città / provincia">
+    <label>Descrizione</label><textarea id="pDesc" maxlength="5000" placeholder="Marca, condizioni (nuovo, imballato, resi…), composizione del lotto, se hai un listino…"></textarea>
+    <label>Foto (fino a 10)</label><input type="file" id="pPhotos" accept="image/*" multiple>
+    <div class="thumbs" id="pThumbs"></div>
+    <h2 style="font-size:20px;margin-top:22px">I tuoi contatti</h2>
+    <div class="two" style="gap:12px">
+      <div><label style="margin-top:6px">Nome e cognome</label><input id="pName" required autocomplete="name" ></div>
+      <div><label style="margin-top:6px">Azienda (facoltativo)</label><input id="pCompany" autocomplete="organization" value="${esc(profile?.ragione_sociale || '')}"></div>
+      <div><label>Telefono / WhatsApp</label><input id="pPhone" inputmode="tel" autocomplete="tel" value="${esc(profile?.telefono || '')}"></div>
+      <div><label>Email</label><input id="pEmail" type="email" autocomplete="email" value="${esc(user?.email || '')}"></div>
+    </div>
+    <input class="hp" id="pWeb" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500"><input type="checkbox" id="pOk" required style="width:auto;margin-top:3px"> Acconsento a essere ricontattato in merito a questa proposta.</label>
+    <div class="err" id="pErr"></div>
+    <div class="row" style="margin-top:16px"><button class="btn y" type="submit" id="pSend">Invia proposta</button></div>
+  </form>`;
+}
+function drawPropThumbs(){
+  const el = $('#pThumbs'); if (!el) return;
+  el.innerHTML = propPhotos.map((p, i) => `<div class="thumb" style="background-image:url('${p.url}')"><button type="button" data-rmprop="${i}">✕</button></div>`).join('');
+}
+async function sendProposal(){
+  const btn = $('#pSend'), err = $('#pErr'); err.textContent = '';
+  if ($('#pWeb').value) return; // anti-spam
+  const phone = $('#pPhone').value.trim(), email = $('#pEmail').value.trim();
+  if (!phone && !email) { err.textContent = 'Inserisci almeno telefono o email.'; return; }
+  btn.disabled = true;
+  try {
+    const id = (crypto.randomUUID ? crypto.randomUUID() : '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))), paths = [];
+    for (let i = 0; i < propPhotos.length; i++) {
+      btn.textContent = `Carico foto ${i + 1}/${propPhotos.length}…`;
+      const blob = await compress(propPhotos[i].file);
+      const path = `p/${id}/${i + 1}.jpg`;
+      const { error } = await sb.storage.from('proposte').upload(path, blob, {contentType: 'image/jpeg', upsert: false});
+      if (error) throw error;
+      paths.push(path);
+    }
+    btn.textContent = 'Invio…';
+    const { error } = await sb.from('proposals').insert({
+      id, title: $('#pTitle').value.trim(), category: $('#pCat').value || null, quantity: $('#pQty').value.trim() || null,
+      price_request: $('#pPrice').value.trim() || null, location: $('#pLoc').value.trim() || null, description: $('#pDesc').value.trim() || null,
+      name: $('#pName').value.trim(), company: $('#pCompany').value.trim() || null, phone: phone || null, email: email || null,
+      photos: paths, user_id: user?.id || null
+    });
+    if (error) throw error;
+    $('#app').innerHTML = `<div class="panel" style="text-align:center;padding:40px 20px"><h1>Proposta inviata ✅</h1><p class="sub" style="margin:10px 0 20px">Grazie! Valutiamo la tua merce e ti ricontattiamo al più presto.</p><div class="row" style="justify-content:center"><a class="btn y" href="#">Torna alla vetrina</a><button class="btn o" data-act="newprop">Invia un'altra proposta</button></div></div>`;
+    window.scrollTo({top: 0});
+  } catch(e) { err.textContent = 'Errore durante l’invio: ' + (e.message || e) + '. Riprova.'; btn.disabled = false; btn.textContent = 'Invia proposta'; }
+}
+
+/* ========== GESTIONE: PROPOSTE ========== */
+async function viewProposals(A){
+  const { data, error } = await sb.from('proposals').select('*').order('created_at', {ascending: false}).limit(200);
+  if (error) throw error;
+  const allPaths = data.flatMap(p => p.photos);
+  let urls = {};
+  if (allPaths.length) {
+    const { data: signed } = await sb.storage.from('proposte').createSignedUrls(allPaths, 3600);
+    (signed || []).forEach(x => { if (x.signedUrl) urls[x.path] = x.signedUrl; });
+  }
+  A._props = data;
+  const wa = t => t && /\d{6,}/.test(t) ? `https://wa.me/${t.replace(/\D/g, '').replace(/^(?!39)(3\d{8,9})$/, '39$1')}` : null;
+  A.innerHTML = `<h1>Proposte di stock</h1><p class="sub">Merce che ti propongono di acquistare dal modulo “Vendi il tuo stock”.</p>
+  ${data.map((p, i) => `<div class="prop">
+    <div class="row" style="justify-content:space-between"><span class="st ${p.status === 'nuova' ? 'nuova' : p.status === 'accettata' ? 'accettata' : p.status === 'rifiutata' ? 'rifiutata' : ''}">${esc(p.status)}</span><span class="meta">${new Date(p.created_at).toLocaleString('it-IT', {dateStyle: 'short', timeStyle: 'short'})}</span></div>
+    <h3 style="margin:8px 0 4px">${esc(p.title)}</h3>
+    <div class="meta">${[p.category, p.quantity && 'Q.tà: ' + p.quantity, p.location && '📍 ' + p.location].filter(Boolean).map(esc).join(' · ')}</div>
+    ${p.price_request ? `<div style="margin-top:6px"><b>Prezzo richiesto:</b> ${esc(p.price_request)}</div>` : ''}
+    ${p.description ? `<p style="white-space:pre-wrap;margin:8px 0">${esc(p.description)}</p>` : ''}
+    ${p.photos.length ? `<div class="ph-row">${p.photos.map(ph => urls[ph] ? `<a href="${urls[ph]}" target="_blank" rel="noopener" style="background-image:url('${urls[ph]}')"></a>` : '').join('')}</div>` : ''}
+    <div style="font-size:14px;margin:8px 0"><b>${esc(p.name)}</b>${p.company ? ' – ' + esc(p.company) : ''}<br>${p.phone ? esc(p.phone) : ''}${p.phone && p.email ? ' · ' : ''}${p.email ? esc(p.email) : ''}</div>
+    <label style="margin-top:4px">Note</label><textarea data-note="${p.id}" style="min-height:50px" placeholder="Note interne (offerta fatta, esito…)">${esc(p.admin_notes || '')}</textarea>
+    <div class="row" style="margin-top:10px">
+      ${wa(p.phone) ? `<a class="btn s g" href="${wa(p.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+      ${p.email ? `<a class="btn s o" href="mailto:${esc(p.email)}?subject=${encodeURIComponent('La tua proposta: ' + p.title)}">Email</a>` : ''}
+      <select data-pstatus="${p.id}" style="width:auto;padding:7px 10px">${['nuova', 'in valutazione', 'accettata', 'rifiutata'].map(st => `<option ${p.status === st ? 'selected' : ''}>${st}</option>`).join('')}</select>
+      <button class="btn s y" data-tolot="${i}">Crea lotto</button>
+    </div>
+  </div>`).join('') || '<div class="empty">Nessuna proposta ancora. Il modulo è su “Vendi il tuo stock”.</div>'}`;
+}
+
 /* ========== AUTENTICAZIONE ========== */
 function loginForm(msg = ''){
   modal(`<h2>Accedi</h2>${msg ? `<p class="note">${msg}</p>` : ''}<form id="loginForm"><label>Email</label><input type="email" id="lEmail" required autocomplete="email"><label>Password</label><input type="password" id="lPass" required autocomplete="current-password"><div class="err" id="lErr"></div>
@@ -600,6 +711,15 @@ document.addEventListener('click', async e => {
     if (d.act === 'forgot') { e.preventDefault(); modal(`<h2>Recupera password</h2><form id="forgotForm"><label>Email</label><input type="email" id="fgEmail" required><div class="row" style="margin-top:14px"><button class="btn y">Invia link</button><button type="button" class="btn o" data-close>Annulla</button></div></form>`); return; }
     if (d.act === 'logout') { await sb.auth.signOut(); toast('Sei uscito'); return; }
     if (d.f) { filter = d.f; return render(); }
+    if (d.act === 'newprop') return viewPropose($('#app'));
+    if (d.rmprop !== undefined) { propPhotos.splice(+d.rmprop, 1); return drawPropThumbs(); }
+    if (d.tolot !== undefined) {
+      const p = A._props[+d.tolot]; history.replaceState(null, '', '#nuovo'); await viewEdit(A, null); renderHeader();
+      $('#fTitle').value = p.title; $('#fDesc').value = [p.description, p.location ? 'Merce a ' + p.location + '.' : ''].filter(Boolean).join('\n');
+      const q = parseInt((p.quantity || '').replace(/\D/g, '')); if (q) $('#fPieces').value = q;
+      const c = cats.find(c => c.name === p.category); if (c) $('#fCat').value = c.slug;
+      toast('Lotto precompilato dalla proposta: aggiungi foto e prezzo'); return;
+    }
     if (d.gal !== undefined) { const l = A._lot; A._gi = +d.gal; $('#mainph').innerHTML = phDiv(l, +d.gal, 'mainph'); document.querySelectorAll('[data-gal]').forEach(x => x.classList.toggle('on', x === t)); return; }
     if (d.req) {
       modal(`<h2>${d.req === 'Informazioni' ? 'Chiedi informazioni' : 'Richiesta d’acquisto'}</h2><p class="meta">${esc(A._lot?.title || '')} · ${esc(d.req)}</p>
@@ -662,6 +782,16 @@ document.addEventListener('click', async e => {
 
 document.addEventListener('change', e => {
   if (e.target.id === 'kitSel') go('kit-' + e.target.value);
+  if (e.target.id === 'pPhotos') {
+    [...e.target.files].forEach(f => { if (propPhotos.length < 10) propPhotos.push({file: f, url: URL.createObjectURL(f)}); });
+    e.target.value = ''; drawPropThumbs();
+  }
+  if (e.target.dataset.pstatus) {
+    sb.from('proposals').update({status: e.target.value}).eq('id', e.target.dataset.pstatus).then(({error}) => { if (error) fail(error); else { toast('Stato aggiornato'); refreshCounters(); } });
+  }
+  if (e.target.dataset.note) {
+    sb.from('proposals').update({admin_notes: e.target.value || null}).eq('id', e.target.dataset.note).then(({error}) => { if (error) fail(error); else toast('Nota salvata'); });
+  }
   if (e.target.id === 'fPhotos') {
     [...e.target.files].forEach(f => editPhotos.push({file: f, url: URL.createObjectURL(f)}));
     e.target.value = ''; drawThumbs();
@@ -673,6 +803,7 @@ document.addEventListener('submit', async e => {
   const f = e.target;
   try {
     if (f.id === 'lotForm') return saveLot(f);
+    if (f.id === 'propForm') return sendProposal();
     if (f.id === 'loginForm') {
       const { error } = await sb.auth.signInWithPassword({email: $('#lEmail').value.trim(), password: $('#lPass').value});
       if (error) { $('#lErr').textContent = /confirm/i.test(error.message) ? 'Devi prima confermare l’email: controlla la posta.' : 'Email o password non corretti.'; return; }
