@@ -60,6 +60,8 @@ h2{font-size:23px}
 .cat{background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;padding:12px 0;font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .cat.on{color:var(--ink);border-bottom-color:var(--yellow)}
 .cat span{font-weight:500;color:#a9a296;margin-left:5px;letter-spacing:0}
+.nuovo{position:absolute;right:10px;top:10px;background:var(--yellow);color:var(--ink);font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:4px 8px;border-radius:4px;text-transform:uppercase;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.evid{position:absolute;right:10px;top:10px;background:var(--ink);color:var(--yellow);font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:4px 8px;border-radius:4px;text-transform:uppercase}
 .soldov{position:absolute;inset:0;background:rgba(20,20,20,.65);color:var(--yellow);font-family:Anton,Impact;font-size:30px;display:flex;align-items:center;justify-content:center;letter-spacing:1px}
 .lot .b{padding:13px 14px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
 .lot h3{margin:0;font-size:16px}
@@ -276,7 +278,7 @@ function renderFooter(){
     <div><b>Contatti</b><br>Tel. e WhatsApp: <a href="tel:+39${A.tel.replace(/\s/g, '')}">${A.tel}</a><br>Email: <a href="mailto:${A.email}">${A.email}</a><br>${A.orari}</div>
     <div><b>Magazzino</b><br>${A.magazzino}<br>Visite e ritiro su appuntamento</div>
   </div>
-  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v11</span></div>`;
+  <div class="fl">${A.nome} · Sede legale ${A.legale} · P.IVA e C.F. ${A.piva} · REA ${A.rea} · Capitale sociale ${A.capitale} · PEC ${A.pec} · <span style="opacity:.5">v12</span></div>`;
   const w = $('#waFloat'); w.href = `https://wa.me/${A.wa}?text=${encodeURIComponent('Buongiorno, vi contatto dal sito Il Boss degli Stock.')}`;
 }
 async function render(){
@@ -333,9 +335,18 @@ function renderHeader(){
 }
 
 /* ========== VETRINA ========== */
+// Ordine: prima i lotti in evidenza (1,2,3 scelti dall'admin), poi tutti gli altri mescolati a caso
+// a ogni apertura del sito (l'ordine resta stabile finché la pagina è aperta), i venduti in fondo.
+const shuffleKey = new Map();
+function rnd(id){ if (!shuffleKey.has(id)) shuffleKey.set(id, Math.random()); return shuffleKey.get(id); }
+function shopOrder(lots){
+  const rank = l => l.status === 'venduto' ? 2 : l.pin ? 0 : 1;
+  return [...lots].sort((a, b) => rank(a) - rank(b) || (rank(a) === 0 ? a.pin - b.pin : rnd(a.id) - rnd(b.id)));
+}
+const isNew = l => Date.now() - new Date(l.created_at) < 7 * 864e5;
 async function viewShop(A){
   const [lots, prices] = await Promise.all([fetchLots(), fetchLotPrices()]);
-  const list = lots.filter(l => filter === 'tutti' || l.category === filter);
+  const list = shopOrder(lots.filter(l => filter === 'tutti' || l.category === filter));
   const usedCats = cats.filter(c => lots.some(l => l.category === c.slug));
   A.innerHTML = `
   ${!user ? `<div class="hero"><h1>Stock per <em>rivenditori</em></h1><p>Lotti interi, mezzi lotti e bancali misti a prezzi da stock. Registrati gratis con la tua partita IVA per vedere i prezzi.</p><div class="row"><button class="btn y" data-act="register">Registrati e vedi i prezzi</button><a class="btn o" href="#proponi" style="border-color:#fff;color:#fff">Vendi il tuo stock</a></div></div>`
@@ -343,7 +354,7 @@ async function viewShop(A){
   ${usedCats.length > 1 ? `<nav class="cats"><button class="cat ${filter === 'tutti' ? 'on' : ''}" data-f="tutti">Tutti<span>${lots.length}</span></button>${usedCats.map(c => `<button class="cat ${filter === c.slug ? 'on' : ''}" data-f="${c.slug}">${esc(c.name)}<span>${lots.filter(l => l.category === c.slug).length}</span></button>`).join('')}</nav>` : ''}
   <div class="grid">${list.map(l => `
     <a class="lot" href="#lotto-${l.id}">
-      <div style="position:relative">${phDiv(l)}<span class="tag">${esc(catOf(l.category).name)}</span>${l.status === 'venduto' ? '<div class="soldov">VENDUTO</div>' : ''}</div>
+      <div style="position:relative">${phDiv(l)}<span class="tag">${esc(catOf(l.category).name)}</span>${l.status === 'venduto' ? '<div class="soldov">VENDUTO</div>' : l.pin ? '<span class="evid">★ In evidenza</span>' : isNew(l) ? '<span class="nuovo">Nuovo</span>' : ''}</div>
       <div class="b"><h3>${esc(l.title)}</h3><div class="meta">${l.pieces ? num(l.pieces) + ' pezzi' : ''}</div>
       <div style="margin-top:auto">${canSeePrices() ? (prices[l.id] != null ? `<span class="price">${eur(prices[l.id])}</span>` : '<span class="meta">Prezzo su richiesta</span>') : '<span class="lock">🔒 Prezzo riservato ai rivenditori</span>'}</div></div>
     </a>`).join('') || '<div class="empty">Nessun lotto disponibile al momento. Torna presto!</div>'}</div>
@@ -396,10 +407,11 @@ async function viewLot(A, id){
 /* ========== GESTIONE: LISTA LOTTI ========== */
 async function viewManage(A){
   const [lots, prices] = await Promise.all([fetchLots({admin: true}), fetchLotPrices()]);
-  A.innerHTML = `<div class="row" style="justify-content:space-between"><div><h1>I tuoi lotti</h1><p class="sub">${lots.length} lotti in totale</p></div><a class="btn y" href="#nuovo">+ Carica lotto</a></div>
+  A.innerHTML = `<div class="row" style="justify-content:space-between"><div><h1>I tuoi lotti</h1><p class="sub">${lots.length} lotti in totale · In vetrina i lotti sono mescolati a caso a ogni visita; con "In evidenza" puoi fissarne fino a 3 in cima (1, 2, 3).</p></div><a class="btn y" href="#nuovo">+ Carica lotto</a></div>
   <div class="panel">${lots.map(l => `<div class="grp">
     <div class="thumb" style="${l.photos[0] ? `background-image:url('${photoUrl(l.photos[0])}')` : ''};display:flex;align-items:center;justify-content:center;font-size:24px">${l.photos[0] ? '' : catOf(l.category).emoji}</div>
     <div class="n"><b>${esc(l.title)}</b><small>${{attivo: '🟢 In vendita', venduto: '🔴 Venduto', bozza: '⚪ Bozza (non visibile)'}[l.status]} · ${prices[l.id] != null ? eur(prices[l.id]) : 'senza prezzo'} · ${new Date(l.created_at).toLocaleDateString('it-IT')}</small></div>
+    <select data-pin="${l.id}" title="In evidenza in cima alla vetrina" style="width:auto;padding:7px 10px">${[['', '★ Evidenza: no'], ['1', '★ 1° posto'], ['2', '★ 2° posto'], ['3', '★ 3° posto']].map(([v, n]) => `<option value="${v}" ${String(l.pin || '') === v ? 'selected' : ''}>${n}</option>`).join('')}</select>
     <a class="btn s o" href="#lotto-${l.id}">Vedi</a>
     <a class="btn s o" href="#modifica-${l.id}">Modifica</a>
     <a class="btn s" href="#kit-${l.id}">Facebook</a>
@@ -841,6 +853,14 @@ document.addEventListener('change', e => {
   if (e.target.id === 'pPhotos') {
     [...e.target.files].forEach(f => { if (propPhotos.length < 10) propPhotos.push({file: f, url: URL.createObjectURL(f)}); });
     e.target.value = ''; drawPropThumbs();
+  }
+  if (e.target.dataset.pin) {
+    const id = +e.target.dataset.pin, pin = e.target.value ? +e.target.value : null;
+    (async () => {
+      if (pin) { const { error } = await sb.from('lots').update({pin: null}).eq('pin', pin).neq('id', id); if (error) throw error; }
+      const { error } = await sb.from('lots').update({pin}).eq('id', id); if (error) throw error;
+      toast(pin ? `In evidenza al ${pin}° posto` : 'Tolto dall\'evidenza'); render();
+    })().catch(fail);
   }
   if (e.target.dataset.pstatus) {
     sb.from('proposals').update({status: e.target.value}).eq('id', e.target.dataset.pstatus).then(({error}) => { if (error) fail(error); else { toast('Stato aggiornato'); refreshCounters(); } });
