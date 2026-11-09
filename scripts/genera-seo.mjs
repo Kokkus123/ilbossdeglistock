@@ -16,6 +16,20 @@ const AZ = {
   tel: '+39 349 410 5409', wa: '393494105409', email: 'info@ilbossdeglistock.it', orari: 'lunedì–venerdì 10–13 e 15–18'
 };
 
+// Altri siti di Olmo S.r.l.: link nel footer e box nei lotti/categorie collegati
+const SISTERS = [
+  { url: 'https://ilbossdellafesta.it/', name: 'Il Boss della Festa', what: 'articoli per feste a tema a prezzi da stock',
+    match: l => /festa|party|piatt|tovagliol|compleann/i.test(l.title),
+    box: 'Cerchi articoli per feste in quantità più piccole? Piatti, bicchieri, tovaglioli e decorazioni a tema li vendiamo anche online, a prezzi da stock, su' },
+  { url: 'https://www.triciclobianchi.it/', name: 'Triciclo Bianchi', what: 'tricicli cargo Bianchi restaurati, anche a noleggio',
+    match: l => /tricicl|cargo bike/i.test(l.title) || l.category === 'bici',
+    box: 'Ti serve un solo triciclo? I tricicli cargo Bianchi restaurati, anche elettrici e a noleggio per hotel e località di mare, li vendiamo anche singolarmente su' },
+  { url: 'https://www.ricambitv.it/', name: 'RicambiTV.it', what: 'ricambi originali per TV testati e garantiti',
+    match: l => /\b(tv|televisor|tele[ -]?comand|main ?board|t-?con)\b/i.test(l.title) || l.category === 'elettronica',
+    box: 'Cerchi ricambi per televisori? Main board, alimentatori, T-Con, barre LED e telecomandi originali, testati e garantiti, li trovi su' }
+];
+const sisterBox = ls => SISTERS.filter(x => ls.some(x.match)).map(x => `<div class="box">${esc(x.box)} <a href="${x.url}"><b>${esc(x.name)}</b></a>.</div>`).join('');
+
 async function load() {
   if (process.argv[2]) return JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
   const get = async q => {
@@ -94,6 +108,7 @@ ${robots ? `<meta name="robots" content="${robots}">` : '<meta name="robots" con
 const foot = cats => `<footer><div class="w"><b>Il Boss degli Stock</b> – stock, liquidazioni e bancali per rivenditori · Magazzino: ${AZ.magazzino} · Tel. e WhatsApp <a href="tel:+${AZ.wa}">${AZ.tel}</a> · <a href="mailto:${AZ.email}">${AZ.email}</a><br>
 ${cats?.length ? `Stock per categoria: ${cats.map(c => `<a href="${catPath(c)}">${esc(c.name)}</a>`).join(' · ')}<br>` : ''}
 <a href="/lotti/">Tutti i lotti</a> · <a href="/vendi-il-tuo-stock/">Vendi il tuo stock</a> · <a href="/contatti/">Contatti</a><br>
+I nostri siti: ${SISTERS.map(x => `<a href="${x.url}">${esc(x.name)}</a> – ${esc(x.what)}`).join(' · ')}<br>
 ${AZ.nome} · Sede legale ${AZ.legale} · P.IVA ${AZ.piva} · REA ${AZ.rea}</div></footer></body></html>`;
 
 const ORG = {
@@ -131,6 +146,7 @@ ${sold ? `<div class="box"><b>Questo lotto è stato venduto.</b> Guarda gli altr
 <h2>Descrizione del lotto</h2>${fmt(l.description)}
 ${items.length ? `<h2>Composizione del lotto</h2><table><tr><th>Articolo</th><th class="r">Quantità</th></tr>${items.map(i => `<tr><td>${esc(i.name)}</td><td class="r">${i.qty ? num(i.qty) : '–'}</td></tr>`).join('')}</table>` : ''}
 <h2>Come acquistare questo stock</h2><p>Vendiamo a rivenditori, grossisti, negozi, ambulanti ed e-commerce con partita IVA. La merce si può vedere su appuntamento nel nostro magazzino di Carpi (MO), con ritiro diretto o spedizione in Italia e all'estero. Chiamaci o scrivici su WhatsApp al <a href="tel:+${AZ.wa}">${AZ.tel}</a>, oppure scrivi a <a href="mailto:${AZ.email}">${AZ.email}</a>.</p>
+${sisterBox([l])}
 ${related.length ? `<h2>${cat && related.some(r => r.category === cat.slug) ? `Altri stock di ${esc(lc(cat.name))} e lotti disponibili` : 'Altri lotti disponibili'}</h2><div class="grid">${related.map(card).join('')}</div>` : ''}
 ${sellBox}
 </main>` + foot(usedCats);
@@ -155,6 +171,7 @@ function catPage(c, ls, usedCats) {
 <h1>Stock ${esc(lc(c.name))} per rivenditori</h1>
 ${catIntro(c, ls)}
 <div class="grid">${ls.map(card).join('')}</div>
+${sisterBox(ls)}
 <h2>Altre categorie di stock</h2><div class="chips">${usedCats.filter(x => x.slug !== c.slug).map(x => `<a href="${catPath(x)}">${esc(x.name)}</a>`).join('')}</div>
 ${sellBox}
 </main>` + foot(usedCats);
@@ -197,6 +214,7 @@ function homeBlock(lots, usedCats) {
 <h3>Come funziona</h3><ol><li><b>Registrati gratis</b> con i dati della tua azienda e la partita IVA.</li><li><b>Approviamo l'account</b> e vedi i prezzi di tutti i lotti.</li><li><b>Richiedi il lotto</b> dal sito o su WhatsApp: vieni a vederlo a Carpi o te lo spediamo.</li></ol>
 <h3>Vendi il tuo stock</h3><p>Acquistiamo stock di magazzino di ogni genere: rimanenze, fine serie, resi, bancali e merce da fallimenti. <a href="/vendi-il-tuo-stock/">Scopri come vendere il tuo stock</a>.</p>
 <h3>Domande frequenti</h3>${FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
+<h3>I nostri siti</h3><ul>${SISTERS.map(x => `<li><a href="${x.url}">${esc(x.name)}</a>: ${esc(x.what)}</li>`).join('')}</ul>
 <p class="seo-contact">${AZ.nome} · Magazzino ${AZ.magazzino} · Tel. e WhatsApp <a href="tel:+${AZ.wa}">${AZ.tel}</a> · <a href="mailto:${AZ.email}">${AZ.email}</a> · <a href="/contatti/">Contatti</a></p>
 </section><!--/SEO-->`;
 }
