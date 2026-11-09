@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['scripts/genera-seo.mjs', 'docs/index.html']
+    paths: ['scripts/genera-seo.mjs', 'scripts/indexnow.mjs', 'docs/index.html']
 permissions:
   contents: write
 concurrency:
@@ -19,8 +19,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - run: git fetch --depth=2 origin main || true
       - run: node scripts/genera-seo.mjs
       - name: Salva se ci sono modifiche
+        id: save
         run: |
           if [ -n "$(git status --porcelain docs)" ]; then
             git config user.name "seo-bot"
@@ -28,6 +30,10 @@ jobs:
             git add docs
             git commit -m "Aggiorna pagine lotti, sitemap e llms.txt"
             git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "Nessuna modifica"
           fi
+      - name: Avvisa Bing (IndexNow)
+        if: steps.save.outputs.changed == 'true'
+        run: node scripts/indexnow.mjs || true
