@@ -107,7 +107,7 @@ ${robots ? `<meta name="robots" content="${robots}">` : '<meta name="robots" con
 
 const foot = cats => `<footer><div class="w"><b>Il Boss degli Stock</b> – stock, liquidazioni e bancali per rivenditori · Magazzino: ${AZ.magazzino} · Tel. e WhatsApp <a href="tel:+${AZ.wa}">${AZ.tel}</a> · <a href="mailto:${AZ.email}">${AZ.email}</a><br>
 ${cats?.length ? `Stock per categoria: ${cats.map(c => `<a href="${catPath(c)}">${esc(c.name)}</a>`).join(' · ')}<br>` : ''}
-<a href="/lotti/">Tutti i lotti</a> · <a href="/vendi-il-tuo-stock/">Vendi il tuo stock</a> · <a href="/contatti/">Contatti</a><br>
+<a href="/lotti/">Tutti i lotti</a> · <a href="/vendi-il-tuo-stock/">Vendi il tuo stock</a> · <a href="/contatti/">Contatti</a> · <a href="/privacy/">Privacy</a><br>
 I nostri siti: ${SISTERS.map(x => `<a href="${x.url}">${esc(x.name)}</a> – ${esc(x.what)}`).join(' · ')}<br>
 ${AZ.nome} · Sede legale ${AZ.legale} · P.IVA ${AZ.piva} · REA ${AZ.rea}</div></footer></body></html>`;
 
